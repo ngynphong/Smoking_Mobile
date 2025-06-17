@@ -1,11 +1,10 @@
-import { View, Text, TextInput, Button, Alert, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, Alert, TouchableOpacity } from 'react-native';
 import { useState, useContext } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { login } from '../../api/authApi';
-import { saveToken, saveUser } from '../../utils/authStorage';
 import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../../contexts/AuthContext';
-
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 export default function LoginScreen() {
     const [email, setEmail] = useState('');
@@ -13,9 +12,10 @@ export default function LoginScreen() {
     const [emailError, setEmailError] = useState('');
     const [passwordError, setPasswordError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const navigation = useNavigation();
     const { login: loginContext } = useContext(AuthContext);
-
+      
     const handleLogin = async () => {
         setIsLoading(true);
         try {
@@ -84,15 +84,21 @@ export default function LoginScreen() {
                     className="border p-2 mb-2 rounded-lg"
                 />
                 {emailError ? <Text className="text-red-500 mb-2 text-sm italic">{emailError}</Text> : null}
-                <Text className="mb-2 font-semibold">Mật khẩu</Text>
-                <TextInput
-                    placeholder='Mật Khẩu'
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry
-                    className="border p-2 mb-2 rounded-lg"
-                />
-                {passwordError ? <Text className="text-red-500 mb-2 text-sm italic">{passwordError}</Text> : null}
+                <View className="relative mb-4">
+                    <Text className="mb-2 font-semibold">Mật khẩu</Text>
+                    <TextInput
+                        placeholder='Mật Khẩu'
+                        value={password}
+                        onChangeText={setPassword}
+                        secureTextEntry={!showPassword}
+                        className="border p-2 mb-2 rounded-lg relative"
+                    />
+                    <TouchableOpacity className="absolute right-2 top-10 text-gray-500" onPress={() => setShowPassword(!showPassword)}>
+                        {showPassword ? <Ionicons name="eye-off" size={18} color="gray" /> : <Ionicons name="eye" size={18} color="gray" />}
+                    </TouchableOpacity>
+                    {passwordError ? <Text className="text-red-500 mb-2 text-sm italic">{passwordError}</Text> : null}
+                </View>
+                
                 <TouchableOpacity onPress={handleSubmit} className="bg-blue-500 rounded-lg py-2" disabled={isLoading}>
                     <Text className="text-white text-center">{isLoading ? 'Đang xử lý...' : 'Đăng nhập'}</Text>
                 </TouchableOpacity>

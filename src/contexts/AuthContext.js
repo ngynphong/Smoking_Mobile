@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { getToken, isAuthenticated, getUser, saveUser, saveToken, removeUser, removeToken } from '../utils/authStorage';
+import { verifyEmail } from '../api/authApi';
 
 export const AuthContext = createContext();
 
@@ -27,6 +28,13 @@ export const AuthProvider = ({ children }) => {
         await saveUser(userData);
         setAuthStatus(true);
         setUser(userData);
+    };
+
+    const register = async (data) => {
+        const response = await register(data);
+        if (response.status === 200) {
+            verifyEmail(response.data.user.email);
+        }
     };
 
     const logout = async () => {

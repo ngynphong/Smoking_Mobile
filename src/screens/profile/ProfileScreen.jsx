@@ -3,31 +3,36 @@ import React, { useEffect, useState, useContext } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { getUser, removeToken, removeUser } from '../../utils/authStorage';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../../contexts/AuthContext';
+import { getProfile } from '../../api/userApi';
 
 export default function ProfileScreen() {
-  const [user, setUser] = useState(null);
+  const [userData, setUserData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const { logout } = useContext(AuthContext);
-
-  useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const userData = await getUser();
-        if (userData) {
-          setUser(userData);
-        } else {
-          console.log("No user data found");
+  const navigation = useNavigation();
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchUserInfo = async () => {
+        try {
+          setIsLoading(true);
+          // Fetch user data from API
+          const user = await getUser();
+          const userProfile = await getProfile(user.id);
+          if (userProfile.data.user) {
+            setUserData(userProfile.data.user);
+          } else {
+            console.log("No user data found");
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        } finally {
+          setIsLoading(false);
         }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchUserInfo();
-  }, []);
+      };
+      fetchUserInfo();
+    }, []));
 
   // Show loading spinner while fetching user data
   if (isLoading) {
@@ -39,7 +44,7 @@ export default function ProfileScreen() {
   }
 
   // Show error state if no user data
-  if (!user) {
+  if (!userData) {
     return (
       <SafeAreaView className="flex-1 justify-center items-center">
         <Text>Could not load user data</Text>
@@ -49,7 +54,7 @@ export default function ProfileScreen() {
 
 
   const menuItems = [
-    { icon: 'person-outline', title: 'Thông tin cá nhân' },
+    { icon: 'person-outline', title: 'Thông tin cá nhân', onPress: () => navigation.navigate('ProfileDetail') },
     { icon: 'settings-outline', title: 'Cài đặt' },
     { icon: 'shield-outline', title: 'Quyền riêng tư' },
     { icon: 'help-circle-outline', title: 'Trợ giúp & Hỗ trợ' },
@@ -58,8 +63,8 @@ export default function ProfileScreen() {
       onPress: async () => {
         try {
           await removeToken();
-          await removeUser(); 
-          logout(); 
+          await removeUser();
+          logout();
         } catch (error) {
           Alert.alert('Lỗi', 'Không thể đăng xuất. Vui lòng thử lại sau.');
         }
@@ -74,14 +79,14 @@ export default function ProfileScreen() {
         <View className="flex-row items-center">
           <Image
             source={{
-              uri: user.avatar_url || `https://ui-avatars.com/api/?name=${user.name}&background=random`
+              uri: userData.avatar_url || `https://ui-avatars.com/api/?name=${userData.name}&background=random`
             }}
-            className="w-20 h-20 rounded-full"
+            className="w-20 h-20 rounded-full bg-blue-200"
           />
           <View className="ml-4">
-            <Text className="text-xl font-bold">{user.name}</Text>
-            <Text className="text-gray-600">{user.email}</Text>
-            <Text className="text-gray-500 capitalize">{user.role}</Text>
+            <Text className="text-xl font-bold">{userData.name}</Text>
+            <Text className="text-gray-600">{userData.email}</Text>
+            <Text className="text-gray-500 capitalize">{userData.role}</Text>
           </View>
         </View>
       </View>

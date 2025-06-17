@@ -7,8 +7,20 @@ import CommunityScreen from '../screens/community/CommunityScreen';
 import ProgressScreen from '../screens/progress/ProgressScreen';
 import ProfileScreen from '../screens/profile/ProfileScreen';
 import Icon from 'react-native-vector-icons/Ionicons';
-const Tab = createBottomTabNavigator();
+import ProfileDetail from '../screens/profile/ProfileDetail';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
+const Tab = createBottomTabNavigator();
+const ProfileStack = createNativeStackNavigator();
+
+function ProfileStackScreen() {
+    return (
+        <ProfileStack.Navigator screenOptions={{ headerShown: false }}>
+            <ProfileStack.Screen name="ProfileMain" component={ProfileScreen} />
+            <ProfileStack.Screen name="ProfileDetail" component={ProfileDetail} />
+        </ProfileStack.Navigator>
+    );
+}
 export default function MainTabs() {
     return (
         <Tab.Navigator
@@ -40,7 +52,7 @@ export default function MainTabs() {
             <Tab.Screen name="Badge" component={BadgeScreen} />
             <Tab.Screen name="Community" component={CommunityScreen} />
             <Tab.Screen name="Progress" component={ProgressScreen} />
-            <Tab.Screen name='Profile' component={ProfileScreen} />
+            <Tab.Screen name='Profile' component={ProfileStackScreen} />
         </Tab.Navigator>
     )
 }

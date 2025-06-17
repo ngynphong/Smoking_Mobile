@@ -1,7 +1,7 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import MainTabs from './MainTabs';
-import React, {  useContext, useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import SplashScreen from '../screens/SplashScreen';
 import AuthStack from './AuthStack';
 import { AuthContext } from '../contexts/AuthContext';
@@ -12,9 +12,7 @@ export default function AppNavigator() {
   const { authStatus, isLoading } = useContext(AuthContext);
 
   if (isLoading) return <SplashScreen />
-  useEffect(() => {
-    console.log("Auth Status Changed:", authStatus);
-  }, [authStatus]);
+
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>

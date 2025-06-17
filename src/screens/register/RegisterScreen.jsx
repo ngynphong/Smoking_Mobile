@@ -1,6 +1,8 @@
-import { View, Text, TextInput, TouchableOpacity } from 'react-native'
+import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native'
 import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { register } from '../../api/authApi';
 
 export default function RegisterScreen({ navigation }) {
   const [formData, setFormData] = useState({
@@ -11,6 +13,8 @@ export default function RegisterScreen({ navigation }) {
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const validateForm = () => {
     let newErrors = {};
@@ -35,9 +39,9 @@ export default function RegisterScreen({ navigation }) {
     try {
       const response = await register(formData);
 
-      if (response.ok) {
-        Alert.alert('Đăng ký thành công', 'Bạn có thể đăng nhập ngay bây giờ');
-        navigation.reset({ index: 0, routes: [{ name: 'Login' }] });
+      if (response.status === 200) {
+        Alert.alert('Đăng ký thành công xác nhận email của bạn');
+        navigation.navigate('VerifyEmail', { email: formData.email });
       } else {
         Alert.alert('Đăng ký thất bại', response.data.message || 'Sai thông tin');
       }
@@ -68,24 +72,34 @@ export default function RegisterScreen({ navigation }) {
           className="border p-2 mb-2 rounded-lg"
         />
         {errors.email ? <Text className="text-red-500 mb-2 text-sm italic">{errors.email}</Text> : null}
-        <Text className="mb-2 font-semibold">Mật khẩu</Text>
-        <TextInput
-          placeholder='Mật Khẩu'
-          value={formData.password}
-          onChangeText={(text) => setFormData({ ...formData, password: text })}
-          secureTextEntry
-          className="border p-2 mb-2 rounded-lg"
-        />
-        {errors.password ? <Text className="text-red-500 mb-2 text-sm italic">{errors.password}</Text> : null}
-        <Text className="mb-2 font-semibold">Xác nhận Mật khẩu</Text>
-        <TextInput
-          placeholder='Mật Khẩu'
-          value={formData.confirmPassword}
-          onChangeText={(text) => setFormData({ ...formData, confirmPassword: text })}
-          secureTextEntry
-          className="border p-2 mb-2 rounded-lg"
-        />
-        {errors.confirmPassword ? <Text className="text-red-500 mb-2 text-sm italic">{errors.confirmPassword}</Text> : null}
+        <View className="relative">
+          <Text className="mb-2 font-semibold">Mật khẩu</Text>
+          <TextInput
+            placeholder='Mật Khẩu'
+            value={formData.password}
+            onChangeText={(text) => setFormData({ ...formData, password: text })}
+            secureTextEntry={!showPassword}
+            className="border p-2 mb-2 rounded-lg"
+          />
+          <TouchableOpacity className="absolute right-2 top-10 text-gray-500" onPress={() => setShowPassword(!showPassword)}>
+            {showPassword ? <Ionicons name="eye-off" size={18} color="gray" /> : <Ionicons name="eye" size={18} color="gray" />}
+          </TouchableOpacity>
+          {errors.password ? <Text className="text-red-500 mb-2 text-sm italic">{errors.password}</Text> : null}
+        </View>
+        <View className="relative">
+          <Text className="mb-2 font-semibold">Xác nhận Mật khẩu</Text>
+          <TextInput
+            placeholder='Mật Khẩu'
+            value={formData.confirmPassword}
+            onChangeText={(text) => setFormData({ ...formData, confirmPassword: text })}
+            secureTextEntry={!showConfirmPassword}
+            className="border p-2 mb-2 rounded-lg"
+          />
+          <TouchableOpacity className="absolute right-2 top-10 text-gray-500" onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
+            {showConfirmPassword ? <Ionicons name="eye-off" size={18} color="gray" /> : <Ionicons name="eye" size={18} color="gray" />}
+          </TouchableOpacity>
+          {errors.confirmPassword ? <Text className="text-red-500 mb-2 text-sm italic">{errors.confirmPassword}</Text> : null}
+        </View>
         <TouchableOpacity
           onPress={handleRegister}
           disabled={loading}

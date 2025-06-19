@@ -86,7 +86,7 @@ export default function ProfileScreen() {
           <View className="ml-4">
             <Text className="text-xl font-bold">{userData.name}</Text>
             <Text className="text-gray-600">{userData.email}</Text>
-            <Text className="text-gray-500 capitalize">{userData.role}</Text>
+            <Text className="text-green-500 capitalize italic">{userData.role}</Text>
           </View>
         </View>
       </View>

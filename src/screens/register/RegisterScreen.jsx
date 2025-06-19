@@ -50,65 +50,102 @@ export default function RegisterScreen({ navigation }) {
     }
   };
   return (
-    <SafeAreaView className="p-4 h-full bg-blue-300">
-      <View className=" my-auto w-[85%] mx-auto bg-white p-6 rounded-lg shadow-lg">
-        <Text className="text-4xl text-center font-bold mb-4">Đăng Ký</Text>
-        <Text className="mb-4 text-center">Vui lòng nhập thông tin đăng ký của bạn</Text>
-        <Text className="mb-2 font-semibold">Name</Text>
-        <TextInput
-          placeholder="Họ và tên"
-          value={formData.name}
-          onChangeText={(text) => setFormData({ ...formData, name: text })}
-          className="border p-2 mb-2 rounded-lg"
-        />
-        {errors.name ? <Text className="text-red-500 mb-2 text-sm italic">{errors.name}</Text> : null}
-        <Text className="mb-2 font-semibold">Email</Text>
-        <TextInput
-          placeholder="Địa chỉ email"
-          value={formData.email}
-          onChangeText={(text) => setFormData({ ...formData, email: text })}
-          keyboardType="email-address"
-          autoCapitalize="none"
-          className="border p-2 mb-2 rounded-lg"
-        />
-        {errors.email ? <Text className="text-red-500 mb-2 text-sm italic">{errors.email}</Text> : null}
-        <View className="relative">
-          <Text className="mb-2 font-semibold">Mật khẩu</Text>
+    <SafeAreaView className="flex-1 bg-white">
+      {/* Top curved background */}
+      <View className="h-[30%] bg-[#6c63ff] rounded-b-[50px] relative" />
+
+      <View className="w-[85%] absolute top-40 mx-auto right-9">
+        <Text className="text-4xl text-center font-bold mb-2 text-white">Đăng Ký</Text>
+        <Text className="text-white text-center mb-8">Vui lòng nhập thông tin đăng ký của bạn</Text>
+
+        {/* Name Input */}
+        <Text className="text-gray-700 my-2 font-semibold">Họ và tên</Text>
+        <View className="mb-4">
           <TextInput
-            placeholder='Mật Khẩu'
+            placeholder="Nhập họ và tên của bạn"
+            value={formData.name}
+            onChangeText={(text) => setFormData({ ...formData, name: text })}
+            className="border border-gray-300 p-3 rounded-lg bg-gray-50"
+          />
+          {errors.name ? <Text className="text-red-500 text-sm mt-1 italic">{errors.name}</Text> : null}
+        </View>
+
+        {/* Email Input */}
+        <Text className="text-gray-700 my-2 font-semibold">Địa chỉ Email</Text>
+        <View className="mb-4">
+          <TextInput
+            placeholder="Nhập email của bạn"
+            value={formData.email}
+            onChangeText={(text) => setFormData({ ...formData, email: text })}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            className="border border-gray-300 p-3 rounded-lg bg-gray-50"
+          />
+          {errors.email ? <Text className="text-red-500 text-sm mt-1 italic">{errors.email}</Text> : null}
+        </View>
+
+        {/* Password Input */}
+        <Text className="text-gray-700 mb-2 font-semibold">Mật khẩu</Text>
+        <View className="mb-4 relative">
+          <TextInput
+            placeholder="Nhập mật khẩu của bạn"
             value={formData.password}
             onChangeText={(text) => setFormData({ ...formData, password: text })}
             secureTextEntry={!showPassword}
-            className="border p-2 mb-2 rounded-lg"
+            className="border border-gray-300 p-3 rounded-lg bg-gray-50"
           />
-          <TouchableOpacity className="absolute right-2 top-10 text-gray-500" onPress={() => setShowPassword(!showPassword)}>
-            {showPassword ? <Ionicons name="eye-off" size={18} color="gray" /> : <Ionicons name="eye" size={18} color="gray" />}
+          <TouchableOpacity
+            className="absolute right-3 top-3"
+            onPress={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ?
+              <Ionicons name="eye-off" size={24} color="gray" /> :
+              <Ionicons name="eye" size={24} color="gray" />
+            }
           </TouchableOpacity>
-          {errors.password ? <Text className="text-red-500 mb-2 text-sm italic">{errors.password}</Text> : null}
+          {errors.password ? <Text className="text-red-500 text-sm mt-1 italic">{errors.password}</Text> : null}
         </View>
-        <View className="relative">
-          <Text className="mb-2 font-semibold">Xác nhận Mật khẩu</Text>
+
+        {/* Confirm Password Input */}
+        <Text className="text-gray-700 mb-2 font-semibold">Xác nhận mật khẩu</Text>
+        <View className="mb-4 relative">
           <TextInput
-            placeholder='Mật Khẩu'
+            placeholder="Nhập lại mật khẩu của bạn"
             value={formData.confirmPassword}
             onChangeText={(text) => setFormData({ ...formData, confirmPassword: text })}
             secureTextEntry={!showConfirmPassword}
-            className="border p-2 mb-2 rounded-lg"
+            className="border border-gray-300 p-3 rounded-lg bg-gray-50"
           />
-          <TouchableOpacity className="absolute right-2 top-10 text-gray-500" onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
-            {showConfirmPassword ? <Ionicons name="eye-off" size={18} color="gray" /> : <Ionicons name="eye" size={18} color="gray" />}
+          <TouchableOpacity
+            className="absolute right-3 top-3"
+            onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+          >
+            {showConfirmPassword ?
+              <Ionicons name="eye-off" size={24} color="gray" /> :
+              <Ionicons name="eye" size={24} color="gray" />
+            }
           </TouchableOpacity>
-          {errors.confirmPassword ? <Text className="text-red-500 mb-2 text-sm italic">{errors.confirmPassword}</Text> : null}
+          {errors.confirmPassword ? <Text className="text-red-500 text-sm mt-1 italic">{errors.confirmPassword}</Text> : null}
         </View>
+
+        {/* Register Button */}
         <TouchableOpacity
           onPress={handleRegister}
           disabled={loading}
-          className="bg-blue-500 rounded-lg py-2 mt-4"
+          className="bg-[#6c63ff] py-3 rounded-lg mt-4"
         >
-          <Text className="text-white text-center">{loading ? 'Đang xử lý...' : 'Đăng ký'}</Text>
+          <Text className="text-white text-center font-bold text-lg">
+            {loading ? 'Đang xử lý...' : 'Đăng Ký'}
+          </Text>
         </TouchableOpacity>
 
-        <Text className="text-blue-500 mt-4 text-center" onPress={() => navigation.navigate('Login')}>Đã có tài khoản? Đăng nhập ngay</Text>
+        {/* Login Link */}
+        <View className="flex-row justify-center mt-8">
+          <Text className="text-gray-600">Đã có tài khoản? </Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+            <Text className="text-[#6c63ff] font-bold">Đăng nhập</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </SafeAreaView>
   );

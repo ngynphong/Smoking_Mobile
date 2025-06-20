@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, FlatList, ActivityIndicator } from 'react-native';
+import { View, Text, Image, FlatList, ActivityIndicator, Button, TouchableOpacity } from 'react-native';
 import clsx from 'clsx';
 import { getBadgeUserId } from '../../api/badgeApi';
 import { getUser } from '../../utils/authStorage';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 const BadgeCard = ({ badge }) => {
   const tierColor = {
@@ -56,6 +57,8 @@ const BadgeCard = ({ badge }) => {
 const BadgeScreen = () => {
   const [badges, setBadges] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigation = useNavigation()
+
   useFocusEffect(
     React.useCallback(() => {
       const fetchBadges = async () => {
@@ -82,6 +85,12 @@ const BadgeScreen = () => {
 
   return (
     <View className="flex-1 bg-white px-4 pt-6">
+      <TouchableOpacity
+        onPress={() => navigation.goBack()}
+        className='absolute top-7 left-6 z-10'
+      >
+        <Ionicons name="arrow-back" size={24} color="black" />
+      </TouchableOpacity>
       <Text className="text-2xl font-bold text-center mb-4">Huy hiệu của bạn</Text>
       <FlatList
         data={badges}

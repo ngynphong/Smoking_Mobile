@@ -15,7 +15,6 @@ const PostCard = ({ post, onPress }) => {
             const fetchUserInfo = async () => {
                 // Kiểm tra nếu user_id là null hoặc không tồn tại
                 if (!user_id) {
-                    // console.log('No user_id found, using default user data');
                     setUserData({
                         name: 'Người dùng ẩn danh',
                         avatar_url: 'https://static.vecteezy.com/system/resources/previews/009/292/244/original/default-avatar-icon-of-social-media-user-vector.jpg'
@@ -25,10 +24,9 @@ const PostCard = ({ post, onPress }) => {
 
                 try {
                     setIsLoading(true);
-                    // Lấy user_id từ object hoặc string
+                    
                     const userId = typeof user_id === 'object' ? user_id._id || user_id.id : user_id;
-                    // console.log('Fetching user data for ID:', userId);
-
+                   
                     const userProfile = await getProfile(userId);
                     if (userProfile.data.user) {
                         setUserData(userProfile.data.user);
@@ -40,7 +38,6 @@ const PostCard = ({ post, onPress }) => {
                         });
                     }
                 } catch (error) {
-                    // console.error("Error fetching user data:", error);
                     setUserData({
                         name: 'Lỗi tải thông tin',
                         avatar_url: 'https://static.vecteezy.com/system/resources/previews/009/292/244/original/default-avatar-icon-of-social-media-user-vector.jpg'
@@ -88,7 +85,7 @@ const PostCard = ({ post, onPress }) => {
     }
 
     return (
-        <TouchableOpacity onPress={onPress} className="bg-white p-4 mb-4 rounded-xl shadow-sm">
+        <TouchableOpacity onPress={onPress} className="bg-white p-4 mb-4 rounded-xl  shadow-2xl">
             <View className="flex-row items-center mb-2">
                 <Image
                     source={{ uri: userData.avatar_url }}

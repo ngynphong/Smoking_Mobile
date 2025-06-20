@@ -1,5 +1,4 @@
 import { ScrollView, View, Text, TouchableOpacity, Image } from 'react-native';
-import HeaderGreeting from '../../components/home/HeaderGreeting';
 import ProgressSummary from '../../components/home/ProgressSummary';
 import MotivationalQuote from '../../components/home/MotivationalQuote';
 import RankingPreview from '../../components/home/RankingPreview';
@@ -13,10 +12,6 @@ import { getUser } from '../../utils/authStorage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 
-// const user = {
-//   name: 'Phong',
-//   avatar_url: 'https://example.com/avatar.jpg',
-// };
 const progressSummary = {
   days: 3,
   moneySaved: 90000,
@@ -55,8 +50,7 @@ export default function HomeScreen() {
         {/* Header */}
         <View className="flex-row items-center justify-between px-6 pt-10 pb-2">
           <View>
-            <Text className="text-lg text-gray-500 mb-1">Good Morning!</Text>
-            <Text className="text-2xl font-bold text-gray-900">Be Productive Today <Text>👏</Text></Text>
+            <Text className="text-2xl font-bold text-gray-900">Be Productive Today</Text>
           </View>
           <View className="flex-row items-center">
             <TouchableOpacity className="mr-3">

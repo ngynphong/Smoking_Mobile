@@ -61,7 +61,7 @@ export default function ProfileDetail({ navigation }) {
     return (
         <SafeAreaView className='flex-1 bg-gray-100'>
             {/* Header Section */}
-            <View className='bg-white p-4 flex-row items-center justify-between mt-4'>
+            <View className='bg-white p-4 flex-row items-center justify-between mt-5'>
                 <TouchableOpacity onPress={() => navigation.goBack()}>
                     <Icon name="arrow-back" size={24} color="#000" />
                 </TouchableOpacity>

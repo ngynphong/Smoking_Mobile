@@ -1,20 +1,24 @@
-import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, SafeAreaView } from 'react-native';
+import { View, Text, SafeAreaView, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native'
+import React, { useState } from 'react'
+import PostCard from '../../components/community/PostCard'
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import PostCard from '../../components/community/PostCard';
-import React, { useEffect, useState } from 'react';
-import { getPosts } from '../../api/postApi';
+import { getPostsByUserId } from '../../api/postApi';
+import { getUser } from '../../utils/authStorage';
+import { ArrowLeft } from 'lucide-react-native';
 
-const CommunityScreen = () => {
+export default function MyPostScreen() {
   const navigation = useNavigation();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+  
   useFocusEffect(
     React.useCallback(() => {
       const fetchPosts = async () => {
         try {
           setLoading(true);
-          const res = await getPosts();
-          setPosts(res.data.posts || []);
+          const user = await getUser();
+          const res = await getPostsByUserId(user.id);
+          setPosts(Array.isArray(res.data.posts) ? res.data.posts : []);
         } catch (err) {
           console.error('Lỗi fetch posts:', err);
         } finally {
@@ -24,7 +28,6 @@ const CommunityScreen = () => {
       fetchPosts();
     }, [])
   );
-
   if (loading) {
     return (
       <View className="flex-1 justify-center items-center bg-white">
@@ -35,8 +38,11 @@ const CommunityScreen = () => {
 
   return (
     <SafeAreaView style={{ flex: 1 }} className="bg-white">
-      <View className="bg-blue-100 py-4">
-        <Text className="text-2xl font-bold text-center">Cộng đồng</Text>
+      <TouchableOpacity className='p-2 absolute top-4 left-4 z-20' onPress={() => navigation.goBack()}>
+        <ArrowLeft size={24} color="#374151" />
+      </TouchableOpacity>
+      <View className="bg-blue-100 py-6">
+        <Text className="text-2xl font-bold text-center">Bài viết của tôi</Text>
       </View>
 
       {posts.length === 0 ? (
@@ -70,7 +76,5 @@ const CommunityScreen = () => {
         <Text className="text-white text-3xl">+</Text>
       </TouchableOpacity>
     </SafeAreaView>
-  );
-};
-
-export default CommunityScreen;
+  )
+}

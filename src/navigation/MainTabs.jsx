@@ -10,25 +10,34 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import ProfileDetail from '../screens/profile/ProfileDetail';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import PostDetail from '../screens/community/PostDetail';
+import QuitPlanScreen from '../screens/quitPlan/QuitPlanScreen';
+import CreatePostScreen from '../screens/community/CreatePostScreen';
+import EditPostScreen from '../screens/community/EditPostScreen';
+import MyPostScreen from '../screens/profile/MyPostScreen';
 
 const Tab = createBottomTabNavigator();
-const ProfileStack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator();
 
 function ProfileStackScreen() {
     return (
-        <ProfileStack.Navigator screenOptions={{ headerShown: false }}>
-            <ProfileStack.Screen name="ProfileMain" component={ProfileScreen} />
-            <ProfileStack.Screen name="ProfileDetail" component={ProfileDetail} />
-        </ProfileStack.Navigator>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="ProfileMain" component={ProfileScreen} />
+            <Stack.Screen name="ProfileDetail" component={ProfileDetail} />
+            <Stack.Screen name="Badge" component={BadgeScreen} />
+            <Stack.Screen name='MyPosts' component={MyPostScreen} />
+            <Stack.Screen name="PostDetail" component={PostDetail} /> 
+        </Stack.Navigator>
     );
 };
 
-function CommunityStackScreen(){
+function CommunityStackScreen() {
     return (
-        <ProfileStack.Navigator screenOptions={{ headerShown: false }}>
-            <ProfileStack.Screen name="CommunityMain" component={CommunityScreen} />
-            <ProfileStack.Screen name="PostDetail" component={PostDetail} />
-        </ProfileStack.Navigator>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="CommunityMain" component={CommunityScreen} />
+            <Stack.Screen name="PostDetail" component={PostDetail} />
+            <Stack.Screen name="CreatePost" component={CreatePostScreen} />
+            <Stack.Screen name="EditPost" component={EditPostScreen} />
+        </Stack.Navigator>
     )
 }
 export default function MainTabs() {
@@ -38,15 +47,15 @@ export default function MainTabs() {
                 tabBarIcon: ({ focused, color, size }) => {
                     let iconName;
 
-                    if (route.name === 'Trang Chủ') {
+                    if (route.name === 'Home') {
                         iconName = focused ? 'home' : 'home-outline';
-                    } else if (route.name === 'Huy Hiệu') {
-                        iconName = focused ? 'diamond' : 'diamond-outline';
-                    } else if (route.name === 'Cộng Đồng') {
+                    } else if (route.name === 'QuitPlan') {
+                        iconName = focused ? 'document-text' : 'document-text-outline';
+                    } else if (route.name === 'Community') {
                         iconName = focused ? 'people' : 'people-outline';
-                    } else if (route.name === 'Tiến Trình') {
+                    } else if (route.name === 'Progress') {
                         iconName = focused ? 'trending-up' : 'trending-up-outline';
-                    } else if (route.name === 'Hồ Sơ') {
+                    } else if (route.name === 'Profile') {
                         iconName = focused ? 'person' : 'person-outline';
                     }
 
@@ -58,11 +67,11 @@ export default function MainTabs() {
                 headerShown: false,
             })}
         >
-            <Tab.Screen name="Trang Chủ" component={HomeScreen} />
-            <Tab.Screen name="Huy Hiệu" component={BadgeScreen} />
-            <Tab.Screen name="Cộng Đồng" component={CommunityStackScreen} />
-            <Tab.Screen name="Tiến Trình" component={ProgressScreen} />
-            <Tab.Screen name='Hồ Sơ' component={ProfileStackScreen} />
+            <Tab.Screen options={{ title: 'Trang Chủ' }} name="Home" component={HomeScreen} />
+            <Tab.Screen options={{ title: 'Kế Hoạch' }} name="QuitPlan" component={QuitPlanScreen} />
+            <Tab.Screen options={{ title: 'Cộng Đồng' }} name="Community" component={CommunityStackScreen} />
+            <Tab.Screen options={{ title: 'Tiến Trình' }} name="Progress" component={ProgressScreen} />
+            <Tab.Screen options={{ title: 'Hồ Sơ' }} name='Profile' component={ProfileStackScreen} />
         </Tab.Navigator>
     )
 }

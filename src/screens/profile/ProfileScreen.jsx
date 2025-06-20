@@ -55,6 +55,8 @@ export default function ProfileScreen() {
 
   const menuItems = [
     { icon: 'person-outline', title: 'Thông tin cá nhân', onPress: () => navigation.navigate('ProfileDetail') },
+    { icon: 'diamond-outline', title: 'Huy hiệu', onPress: () => navigation.navigate('Badge') },
+    { icon: 'book-outline', title: 'Bài viết của tôi', onPress: () => navigation.navigate('MyPosts') },
     { icon: 'settings-outline', title: 'Cài đặt' },
     { icon: 'shield-outline', title: 'Quyền riêng tư' },
     { icon: 'help-circle-outline', title: 'Trợ giúp & Hỗ trợ' },

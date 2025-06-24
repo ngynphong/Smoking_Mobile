@@ -1,4 +1,4 @@
-import { ScrollView, View, Text, TouchableOpacity, Image } from 'react-native';
+import { ScrollView, View, Text, TouchableOpacity, Image, SafeAreaView, ActivityIndicator } from 'react-native';
 import ProgressSummary from '../../components/home/ProgressSummary';
 import MotivationalQuote from '../../components/home/MotivationalQuote';
 import RankingPreview from '../../components/home/RankingPreview';
@@ -20,15 +20,18 @@ const progressSummary = {
 
 export default function HomeScreen() {
   const [user, setUser] = useState(null);
-
+  const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     const fetchUserData = async () => {
       try {
+        setIsLoading(true);
         const user = await getUser();
         const userData = await getProfile(user.id);
         setUser(userData.data.user);
       } catch (error) {
         console.error('Error fetching user data:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchUserData();
@@ -38,6 +41,16 @@ export default function HomeScreen() {
     return null; // or a loading spinner
   }
 
+  if (isLoading) {
+    return (
+      <SafeAreaView className="flex-1 justify-center items-center bg-gradient-to-br from-purple-500 to-pink-500">
+        <View className="bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl">
+          <ActivityIndicator size="large" color="#8B5CF6" />
+          <Text className="mt-4 text-gray-700 font-medium">Đang tải...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
   return (
     <LinearGradient
       colors={["#f5e9e2", "#e3eafc"]}

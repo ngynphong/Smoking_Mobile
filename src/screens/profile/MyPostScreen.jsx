@@ -9,30 +9,34 @@ import { ArrowLeft } from 'lucide-react-native';
 export default function MyPostScreen() {
   const navigation = useNavigation();
   const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   
   useFocusEffect(
     React.useCallback(() => {
       const fetchPosts = async () => {
         try {
-          setLoading(true);
+          setIsLoading(true);
           const user = await getUser();
           const res = await getPostsByUserId(user.id);
           setPosts(Array.isArray(res.data.posts) ? res.data.posts : []);
         } catch (err) {
           console.error('Lỗi fetch posts:', err);
         } finally {
-          setLoading(false);
+          setIsLoading(false);
         }
       };
       fetchPosts();
     }, [])
   );
-  if (loading) {
+  
+  if (isLoading) {
     return (
-      <View className="flex-1 justify-center items-center bg-white">
-        <ActivityIndicator size="large" color="#2563eb" />
-      </View>
+      <SafeAreaView className="flex-1 justify-center items-center bg-gradient-to-br from-purple-500 to-pink-500">
+        <View className="bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl">
+          <ActivityIndicator size="large" color="#8B5CF6" />
+          <Text className="mt-4 text-gray-700 font-medium">Đang tải...</Text>
+        </View>
+      </SafeAreaView>
     );
   }
 

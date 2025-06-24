@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, FlatList, ActivityIndicator, Button, TouchableOpacity } from 'react-native';
+import { View, Text, Image, FlatList, ActivityIndicator, Button, TouchableOpacity, Modal, TextInput } from 'react-native';
 import clsx from 'clsx';
-import { getBadgeUserId } from '../../api/badgeApi';
+import { getBadgeUserId, shareBadge } from '../../api/badgeApi';
 import { getUser } from '../../utils/authStorage';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
-const BadgeCard = ({ badge }) => {
+const BadgeCard = ({ badge, onShare }) => {
   const tierColor = {
     Bronze: 'bg-amber-500',
     Silver: 'bg-gray-400',
@@ -50,6 +50,14 @@ const BadgeCard = ({ badge }) => {
       <View className={clsx('px-3 py-1 rounded-full', tierColor)}>
         <Text className="text-white text-xs font-semibold">{badge.tier}</Text>
       </View>
+      {badge.earned && (
+        <TouchableOpacity
+          className="mt-2 px-3 py-1 bg-blue-500 rounded-full"
+          onPress={() => onShare(badge)}
+        >
+          <Text className="text-white text-xs font-semibold">Chia sẻ</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 };
@@ -57,6 +65,10 @@ const BadgeCard = ({ badge }) => {
 const BadgeScreen = () => {
   const [badges, setBadges] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [shareTitle, setShareTitle] = useState('');
+  const [shareContent, setShareContent] = useState('');
+  const [selectedBadge, setSelectedBadge] = useState(null);
   const navigation = useNavigation()
 
   useFocusEffect(
@@ -74,6 +86,29 @@ const BadgeScreen = () => {
       };
       fetchBadges();
     }, []));
+
+  const handleShare = (badge) => {
+    setSelectedBadge(badge);
+    setShareTitle(`Tôi vừa đạt được huy hiệu "${badge.name}"!`);
+    // setShareContent(null);
+    setModalVisible(true);
+  };
+
+  const handleSubmitShare = async () => {
+    try {
+      const data = {
+        badge_id: selectedBadge._id,
+        title: shareTitle,
+        content: shareContent,
+        tags: [],
+      };
+      await shareBadge(data);
+      setModalVisible(false);
+      alert('Chia sẻ huy hiệu thành công!');
+    } catch (error) {
+      alert('Chia sẻ thất bại!');
+    }
+  };
 
   if (loading) {
     return (
@@ -94,11 +129,51 @@ const BadgeScreen = () => {
       <Text className="text-2xl font-bold text-center mb-4">Huy hiệu của bạn</Text>
       <FlatList
         data={badges}
-        renderItem={({ item }) => <BadgeCard badge={item} />}
+        renderItem={({ item }) => <BadgeCard badge={item} onShare={handleShare} />}
         keyExtractor={(item) => item._id}
         numColumns={2}
         contentContainerStyle={{ paddingBottom: 20 }}
       />
+
+      <Modal
+        visible={modalVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View className="flex-1 justify-center items-center bg-opacity-40">
+          <View className="bg-gray-200 p-6 rounded-xl w-11/12 shadow-lg">
+            <Text className="text-lg font-bold mb-2">Chia sẻ huy hiệu</Text>
+            <TextInput
+              className="border border-gray-400 rounded-lg px-3 py-2 mb-3"
+              placeholder="Tiêu đề"
+              value={shareTitle}
+              onChangeText={setShareTitle}
+            />
+            <TextInput
+              className="border border-gray-400 rounded-lg px-3 py-2 mb-3"
+              placeholder="Nội dung"
+              value={shareContent}
+              onChangeText={setShareContent}
+              multiline
+            />
+            <View className="flex-row justify-end">
+              <TouchableOpacity
+                className="mr-3 px-4 py-2 bg-gray-300 rounded-lg"
+                onPress={() => setModalVisible(false)}
+              >
+                <Text>Huỷ</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                className="px-4 py-2 bg-blue-500 rounded-lg"
+                onPress={handleSubmitShare}
+              >
+                <Text className="text-white">Chia sẻ</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };

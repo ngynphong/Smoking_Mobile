@@ -25,7 +25,7 @@ function ProfileStackScreen() {
             <Stack.Screen name="ProfileDetail" component={ProfileDetail} />
             <Stack.Screen name="Badge" component={BadgeScreen} />
             <Stack.Screen name='MyPosts' component={MyPostScreen} />
-            <Stack.Screen name="PostDetail" component={PostDetail} /> 
+            <Stack.Screen name="PostDetail" component={PostDetail} />
         </Stack.Navigator>
     );
 };
@@ -62,7 +62,7 @@ export default function MainTabs() {
                     // You can return any component that you like here!
                     return <Icon name={iconName} size={size} color={color} />;
                 },
-                tabBarActiveTintColor: '#673ab7',
+                tabBarActiveTintColor: '#3366FF',
                 tabBarInactiveTintColor: '#b0bec5',
                 headerShown: false,
             })}

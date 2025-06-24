@@ -7,35 +7,38 @@ import { getPosts } from '../../api/postApi';
 const CommunityScreen = () => {
   const navigation = useNavigation();
   const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   useFocusEffect(
     React.useCallback(() => {
       const fetchPosts = async () => {
         try {
-          setLoading(true);
+          setIsLoading(true);
           const res = await getPosts();
           setPosts(res.data.posts || []);
         } catch (err) {
           console.error('Lỗi fetch posts:', err);
         } finally {
-          setLoading(false);
+          setIsLoading(false);
         }
       };
       fetchPosts();
     }, [])
   );
 
-  if (loading) {
+  if (isLoading) {
     return (
-      <View className="flex-1 justify-center items-center bg-white">
-        <ActivityIndicator size="large" color="#2563eb" />
-      </View>
+      <SafeAreaView className="flex-1 justify-center items-center bg-gradient-to-br from-purple-500 to-pink-500">
+        <View className="bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl">
+          <ActivityIndicator size="large" color="#8B5CF6" />
+          <Text className="mt-4 text-gray-700 font-medium">Đang tải...</Text>
+        </View>
+      </SafeAreaView>
     );
   }
 
   return (
     <SafeAreaView style={{ flex: 1 }} className="bg-white">
-      <View className="bg-blue-100 py-4">
+      <View className="bg-blue-200 py-4">
         <Text className="text-2xl font-bold text-center">Cộng đồng</Text>
       </View>
 

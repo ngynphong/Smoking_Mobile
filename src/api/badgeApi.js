@@ -12,3 +12,7 @@ export const shareBadge = async (data) => {
 export const getBadges = async () => {
     return await axios.get(`${API_BASE_URL}/user-badges`);
 }
+
+export const leaderBoard = async () => {
+    return await axios.get(`${API_BASE_URL}/badges/leaderboard`);
+}

@@ -5,7 +5,7 @@ import { getTags } from '../../api/tagAPi';
 import { ActivityIndicator } from 'react-native';
 import { ArrowLeft } from 'lucide-react-native';
 import { createPosts } from '../../api/postApi';
-
+import * as ImagePicker from 'expo-image-picker';
 export default function CreatePostScreen() {
     const navigation = useNavigation();
     const [title, setTitle] = useState('');
@@ -26,6 +26,7 @@ export default function CreatePostScreen() {
         }
         fetchTags();
     }, []);
+
     const handleCreate = async () => {
         if (!title.trim() || !content.trim() || !selectedTag) {
             Alert.alert('Lỗi', 'Vui lòng nhập đầy đủ thông tin');
@@ -50,6 +51,7 @@ export default function CreatePostScreen() {
             setLoading(false);
         }
     };
+
     return (
         <ScrollView contentContainerStyle={{ padding: 16 }}>
 
@@ -63,7 +65,7 @@ export default function CreatePostScreen() {
                 value={title}
                 onChangeText={setTitle}
                 placeholder='Nhập tiêu đề'
-                className='border rounded px-3 py-2 mb-3'
+                className='border-gray-300 border rounded-lg px-3 py-2 mb-3'
             />
             <Text className='text-lg font-bold mb-2'>Nội dung</Text>
             <TextInput
@@ -71,16 +73,38 @@ export default function CreatePostScreen() {
                 onChangeText={setContent}
                 placeholder='Nhập nội dung'
                 multiline
-                className='border rounded px-3 py-2 mb-3'
+                className='border-gray-300 border rounded-lg px-3 py-2 mb-3'
                 style={{ minHeight: 80 }}
             />
-            <Text className='text-lg font-bold mb-2'>Ảnh (URL)</Text>
-            <TextInput
-                value={image}
-                onChangeText={setImage}
-                placeholder='Nhập URL'
-                className='border rounded px-3 py-2 mb-3'
-            />
+            <TouchableOpacity
+                onPress={async () => {
+                    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+                    if (status !== 'granted') {
+                        Alert.alert('Lỗi', 'Chúng tôi cần quyền truy cập vào thư viện ảnh của bạn!');
+                        return;
+                    }
+                    const result = await ImagePicker.launchImageLibraryAsync({
+                        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                        allowsEditing: true,
+                        aspect: [1, 1],
+                        quality: 1,
+                    });
+                    if (!result.canceled) {
+                        setImage(result.assets[0].uri);
+                    }
+                }}
+                style={{
+                    backgroundColor: '#e0e7ef',
+                    padding: 12,
+                    borderRadius: 8,
+                    alignItems: 'center',
+                    marginBottom: 12,
+                }}
+            >
+                <Text style={{ color: '#2563eb', fontWeight: 'bold' }}>
+                    {image ? 'Đổi ảnh' : 'Chọn ảnh từ thiết bị'}
+                </Text>
+            </TouchableOpacity>
             {image ? (
                 <Image source={{ uri: image }} style={{ width: '100%', height: 180, borderRadius: 8, marginBottom: 12 }} />
             ) : null}
@@ -108,7 +132,7 @@ export default function CreatePostScreen() {
                 style={{
                     backgroundColor: '#2563eb',
                     padding: 16,
-                    borderRadius: 8,
+                    borderRadius: 12,
                     alignItems: 'center',
                     marginTop: 12,
                     opacity: loading ? 0.7 : 1,

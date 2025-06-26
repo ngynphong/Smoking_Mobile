@@ -45,7 +45,7 @@ const BadgeCard = ({ badge, onShare }) => {
           badge.earned ? 'text-gray-500' : 'text-gray-300'
         )}
       >
-        {badge.condition}
+        {badge.point_value} điểm
       </Text>
       <View className={clsx('px-3 py-1 rounded-full', tierColor)}>
         <Text className="text-white text-xs font-semibold">{badge.tier}</Text>

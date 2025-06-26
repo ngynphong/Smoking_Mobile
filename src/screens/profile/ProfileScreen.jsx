@@ -25,7 +25,7 @@ export default function ProfileScreen() {
           setIsLoading(true);
           const user = await getUser();
           const userProfile = await getProfile(user.id);
-          const post = await getPostsByUserId(user.id);     
+          const post = await getPostsByUserId(user.id);
           const badge = await getBadgeUserId(user.id);
           if (userProfile.data.user) {
             setUserData(userProfile.data.user);
@@ -91,19 +91,37 @@ export default function ProfileScreen() {
       onPress: () => navigation.navigate('MyPosts')
     },
     {
+      icon: 'document-text-outline',
+      title: 'Kế hoạch của tôi',
+      subtitle: 'Quản lý kế hoạch',
+      color: '#06B6D4',
+      bgColor: '#ECFEFF',
+      onPress: () => navigation.navigate('MyQuitPlan')
+    },
+    {
+      icon: 'logo-no-smoking',
+      title: 'Tình trạng hút thuốc',
+      subtitle: 'Ghi nhận tình trạng hút thuốc',
+      color: '#6B7280',
+      bgColor: '#F9FAFB',
+      onPress: () => navigation.navigate('SmokingStatus')
+    },
+    {
+      icon: 'send-outline',
+      title: 'Yêu cầu tạo kế hoạch',
+      subtitle: 'Gửi yêu cầu cho Coach tạo kế hoạch',
+      color: '#8B5CF6',
+      bgColor: '#F5F3FF',
+      onPress: () => navigation.navigate('QuitPlanRequest')
+    },
+    {
       icon: 'settings-outline',
       title: 'Cài đặt',
       subtitle: 'Tùy chỉnh ứng dụng',
       color: '#6B7280',
       bgColor: '#F9FAFB'
     },
-    {
-      icon: 'shield-outline',
-      title: 'Quyền riêng tư',
-      subtitle: 'Bảo mật và quyền riêng tư',
-      color: '#8B5CF6',
-      bgColor: '#F5F3FF'
-    },
+
     {
       icon: 'help-circle-outline',
       title: 'Trợ giúp & Hỗ trợ',
@@ -261,10 +279,9 @@ export default function ProfileScreen() {
         <View className="px-6 py-8 items-center">
           <View className="flex-row items-center mb-2">
             <Icon name="sparkles" size={16} color="#8B5CF6" />
-            <Text className="ml-2 text-purple-600 font-medium">MyApp</Text>
+            <Text className="ml-2 text-purple-600 font-medium">Exhela</Text>
           </View>
           <Text className="text-gray-400 text-sm">Version 1.0.0</Text>
-          <Text className="text-gray-400 text-xs mt-1">Made with ❤️ in Vietnam</Text>
         </View>
       </ScrollView>
     </SafeAreaView>

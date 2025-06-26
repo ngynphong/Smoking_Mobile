@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ActivityIndicator, ScrollView } from 'react-native';
-import { getAllQuitPlanPublic } from '../../api/quitPlanApi';
+import { View, Text, ActivityIndicator, ScrollView, SafeAreaView, TouchableOpacity } from 'react-native';
+import { getQuitplanByUserId } from '../../api/quitPlanApi';
+import { getUser } from '../../utils/authStorage';
 import { getStagebyPlanId } from '../../api/stageApi';
 import { getTasksbyStageId } from '../../api/taskApi';
+import { ArrowLeft } from 'lucide-react-native';
+import { useNavigation } from '@react-navigation/native';
 
 const TaskItem = ({ task }) => (
   <View className="mb-2 p-3 bg-gray-100 rounded-md border border-gray-200">
@@ -26,21 +29,24 @@ const StageItem = ({ stage, tasks }) => (
   </View>
 );
 
-const QuitPlanScreen = () => {
+export default function MyQuitPlanScreen() {
   const [plans, setPlans] = useState([]);
   const [stages, setStages] = useState([]);
   const [tasks, setTasks] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigation = useNavigation();
 
   useEffect(() => {
     const fetchPlanData = async () => {
       try {
+        setIsLoading(true);
         setError(null);
-        const response = await getAllQuitPlanPublic();
-        setPlans(response.data);
+        const user = await getUser();
+        const planRes = await getQuitplanByUserId(user.id);
+        setPlans(planRes.data);
 
-        const planIds = response.data.map(p => p._id);
+        const planIds = planRes.data.map(p => p._id);
 
         let allStages = [];
         for (const planId of planIds) {
@@ -51,7 +57,6 @@ const QuitPlanScreen = () => {
 
         const stageIds = allStages.map(s => s._id);
 
-        // Lấy tasks cho từng stageId (nếu API không nhận mảng)
         let allTasks = [];
         for (const stageId of stageIds) {
           const tasksRes = await getTasksbyStageId(stageId);
@@ -67,31 +72,38 @@ const QuitPlanScreen = () => {
         setError('Không thể tải dữ liệu kế hoạch. Vui lòng thử lại sau.');
         console.error('Lỗi khi tải dữ liệu kế hoạch:', err);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
     fetchPlanData();
   }, []);
 
-  if (loading) {
+  if (isLoading) {
     return (
-      <View className="flex-1 justify-center items-center">
-        <ActivityIndicator size="large" color="#2563eb" />
-      </View>
+      <SafeAreaView className="flex-1 justify-center items-center bg-gradient-to-br from-purple-500 to-pink-500">
+        <View className="bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl">
+          <ActivityIndicator size="large" color="#8B5CF6" />
+          <Text className="mt-4 text-gray-700 font-medium">Đang tải...</Text>
+        </View>
+      </SafeAreaView>
     );
   }
 
   if (error) {
     return (
-      <View className="flex-1 justify-center items-center bg-gray-50 px-4">
+      <SafeAreaView className="flex-1 justify-center items-center bg-gray-50 px-4">
         <Text className="text-xl text-red-500 font-semibold text-center">{error}</Text>
-      </View>
+      </SafeAreaView>
     );
   }
 
   return (
     <ScrollView className="flex-1 bg-gray-50 px-4 pt-4">
-      <Text className="text-2xl font-bold text-center p-6">Kế hoạch cai thuốc</Text>
+      <TouchableOpacity className='p-2 absolute top-5 z-20' onPress={() => navigation.goBack()}>
+        <ArrowLeft size={24} color="#374151" />
+      </TouchableOpacity>
+      <Text className="text-2xl font-bold text-center  p-6">Kế hoạch cai thuốc của tôi</Text>
+
       {plans.length === 0 ? (
         <Text className="text-center text-gray-500">Không có kế hoạch nào để hiển thị.</Text>
       ) : (
@@ -118,6 +130,4 @@ const QuitPlanScreen = () => {
       )}
     </ScrollView>
   );
-};
-
-export default QuitPlanScreen;
+}

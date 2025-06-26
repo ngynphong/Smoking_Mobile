@@ -1,6 +1,5 @@
 import axios from '../configs/axios';
-const API_BASE_URL = 'http://localhost:8080/api' || process.env.EXPO_BASE_URL;
 
 export const getTasksbyStageId = async (stageId) => {
-    return await axios.get(`${API_BASE_URL}/tasks/stage/${stageId}`);
+    return await axios.get(`/tasks/stage/${stageId}`);
 };

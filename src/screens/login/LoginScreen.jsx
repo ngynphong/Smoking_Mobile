@@ -107,8 +107,8 @@ export default function LoginScreen() {
                         onPress={() => setShowPassword(!showPassword)}
                     >
                         {showPassword ?
-                            <Ionicons name="eye-off" size={24} color="gray" /> :
-                            <Ionicons name="eye" size={24} color="gray" />
+                            <Ionicons name="eye-off" size={18} color="gray" /> :
+                            <Ionicons name="eye" size={18} color="gray" />
                         }
                     </TouchableOpacity>
                     {passwordError ? <Text className="text-red-500 text-sm mt-1 italic">{passwordError}</Text> : null}
@@ -134,7 +134,7 @@ export default function LoginScreen() {
 
                 {/* Sign Up Link */}
                 <View className="flex-row justify-center mt-8">
-                    <Text className="text-gray-600">Chua có tài khoản? </Text>
+                    <Text className="text-gray-600">Chưa có tài khoản? </Text>
                     <TouchableOpacity onPress={() => navigation.navigate('Register')}>
                         <Text className="text-[#6c63ff] font-bold">Đăng ký</Text>
                     </TouchableOpacity>

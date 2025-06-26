@@ -4,8 +4,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { getUser } from '../../utils/authStorage';
 import { createSmokingStatus, deleteSmokingStatus, getSmokingStatus } from '../../api/smokingStatusApi';
 import { ArrowLeft } from 'lucide-react-native';
-import { useNavigation } from '@react-navigation/native';
-
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 const SmokingStatusScreen = () => {
     const [form, setForm] = useState({
         frequency: 'daily',
@@ -18,26 +17,26 @@ const SmokingStatusScreen = () => {
     const [showModal, setShowModal] = useState(false);
     const [loading, setLoading] = useState(true);
     const navigation = useNavigation();
-
-    useEffect(() => {
-        const fetchStatus = async () => {
-            try {
-                const user = await getUser();
-                const res = await getSmokingStatus(user.id);
-                if (res?.data.smokingStatus) {
-                    setStatus(res.data.smokingStatus);
-                } else {
-                    setShowModal(true);
+    useFocusEffect(
+        React.useCallback(() => {
+            const fetchStatus = async () => {
+                try {
+                    const user = await getUser();
+                    const res = await getSmokingStatus(user.id);
+                    if (res?.data.smokingStatus) {
+                        setStatus(res.data.smokingStatus);
+                    } else {
+                        setStatus(null);
+                    }
+                } catch (error) {
+                    setStatus(null);
+                } finally {
+                    setLoading(false);
                 }
-            } catch (error) {
-                setShowModal(true);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchStatus();
-    }, []);
-
+            };
+            fetchStatus();
+        }, [])
+    )
 
     const handleChange = (field, value) => {
         setForm({ ...form, [field]: value });
@@ -64,7 +63,8 @@ const SmokingStatusScreen = () => {
 
     const handleDelete = async () => {
         try {
-            await deleteSmokingStatus(status._id);
+            const user = await getUser();
+            await deleteSmokingStatus(user.id);
             setStatus(null);
             setShowModal(true);
             alert('Đã xóa trạng thái thành công');
@@ -94,7 +94,7 @@ const SmokingStatusScreen = () => {
                     {/* <Text className="text-base mb-2 text-gray-700">Tần suất hút: <Text className="font-semibold">{status.frequency}</Text></Text> */}
                     <Text className="text-base mb-2 text-gray-700">Số điếu hút mỗi ngày: <Text className="font-semibold">{status.cigarettes_per_day}</Text></Text>
                     <Text className="text-base mb-2 text-gray-700">Giá mỗi bao: <Text className="font-semibold">{status.cost_per_pack} VNĐ</Text></Text>
-                    <Text className="text-base mb-2 text-gray-700">Ngày bắt đầu cai: <Text className="font-semibold">{new Date(status.start_date).toLocaleDateString()}</Text></Text>
+                    <Text className="text-base mb-2 text-gray-700">Ngày bắt đầu cai: <Text className="font-semibold">{new Date(status.start_date).toLocaleDateString('vi-VN')}</Text></Text>
 
                     <TouchableOpacity
                         onPress={handleDelete}
@@ -103,7 +103,17 @@ const SmokingStatusScreen = () => {
                         <Text className="text-center text-white font-semibold">Xóa Thông Tin</Text>
                     </TouchableOpacity>
                 </View>
-            ) : null}
+            ) : (
+                <View className="bg-white p-6 rounded-xl shadow items-center">
+                    <Text className="text-base text-gray-700 mb-4">Chưa có thông tin tình trạng hút thuốc.</Text>
+                    <TouchableOpacity
+                        onPress={() => setShowModal(true)}
+                        className="bg-blue-600 rounded-full py-3 px-6"
+                    >
+                        <Text className="text-white font-semibold">Thêm Thông Tin</Text>
+                    </TouchableOpacity>
+                </View>
+            )}
 
             <Modal visible={showModal} animationType="slide">
                 <ScrollView className="flex-1 bg-white px-4 py-6">
@@ -133,7 +143,7 @@ const SmokingStatusScreen = () => {
                         onPress={() => setShowDatePicker(true)}
                         className="mb-4 border border-gray-300 rounded px-3 py-2 bg-white"
                     >
-                        <Text className="text-gray-700">{form.start_date.toLocaleDateString()}</Text>
+                        <Text className="text-gray-700">{new Date(form.start_date).toLocaleDateString('vi-VN')}</Text>
                     </TouchableOpacity>
 
                     {showDatePicker && (

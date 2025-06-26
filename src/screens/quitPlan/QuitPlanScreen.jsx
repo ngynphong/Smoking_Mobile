@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ActivityIndicator, ScrollView } from 'react-native';
+import { View, Text, ActivityIndicator, ScrollView, SafeAreaView } from 'react-native';
 import { getAllQuitPlanPublic } from '../../api/quitPlanApi';
 import { getStagebyPlanId } from '../../api/stageApi';
 import { getTasksbyStageId } from '../../api/taskApi';
@@ -30,7 +30,7 @@ const QuitPlanScreen = () => {
   const [plans, setPlans] = useState([]);
   const [stages, setStages] = useState([]);
   const [tasks, setTasks] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -67,19 +67,22 @@ const QuitPlanScreen = () => {
         setError('Không thể tải dữ liệu kế hoạch. Vui lòng thử lại sau.');
         console.error('Lỗi khi tải dữ liệu kế hoạch:', err);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
     fetchPlanData();
   }, []);
 
-  if (loading) {
-    return (
-      <View className="flex-1 justify-center items-center">
-        <ActivityIndicator size="large" color="#2563eb" />
-      </View>
-    );
-  }
+  if (isLoading) {
+          return (
+              <SafeAreaView className="flex-1 justify-center items-center bg-gradient-to-br from-purple-500 to-pink-500">
+                  <View className="bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl">
+                      <ActivityIndicator size="large" color="#8B5CF6" />
+                      <Text className="mt-4 text-gray-700 font-medium">Đang tải...</Text>
+                  </View>
+              </SafeAreaView>
+          );
+      }
 
   if (error) {
     return (

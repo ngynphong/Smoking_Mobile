@@ -99,8 +99,8 @@ export default function RegisterScreen({ navigation }) {
             onPress={() => setShowPassword(!showPassword)}
           >
             {showPassword ?
-              <Ionicons name="eye-off" size={24} color="gray" /> :
-              <Ionicons name="eye" size={24} color="gray" />
+              <Ionicons name="eye-off" size={18} color="gray" /> :
+              <Ionicons name="eye" size={18} color="gray" />
             }
           </TouchableOpacity>
           {errors.password ? <Text className="text-red-500 text-sm mt-1 italic">{errors.password}</Text> : null}
@@ -121,8 +121,8 @@ export default function RegisterScreen({ navigation }) {
             onPress={() => setShowConfirmPassword(!showConfirmPassword)}
           >
             {showConfirmPassword ?
-              <Ionicons name="eye-off" size={24} color="gray" /> :
-              <Ionicons name="eye" size={24} color="gray" />
+              <Ionicons name="eye-off" size={18} color="gray" /> :
+              <Ionicons name="eye" size={18} color="gray" />
             }
           </TouchableOpacity>
           {errors.confirmPassword ? <Text className="text-red-500 text-sm mt-1 italic">{errors.confirmPassword}</Text> : null}

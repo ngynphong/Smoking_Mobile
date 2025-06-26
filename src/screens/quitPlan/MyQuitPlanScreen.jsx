@@ -20,7 +20,7 @@ const StageItem = ({ stage, tasks }) => (
       <Text className="text-lg font-bold text-blue-600">{stage.title}</Text>
       <Text className="text-sm text-gray-700 mt-1">{stage.description}</Text>
       <Text className="text-xs text-gray-500 mt-1">
-        {new Date(stage.start_date).toLocaleDateString()} ➝ {new Date(stage.end_date).toLocaleDateString()}
+        {new Date(stage.start_date).toLocaleDateString('vi-VN')} ➝ {new Date(stage.end_date).toLocaleDateString('vi-VN')}
       </Text>
     </View>
     <View className="mt-2">

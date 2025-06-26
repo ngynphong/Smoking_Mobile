@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { getToken } from '../utils/authStorage';
 
-const API_URL = 'https://smokingswp.onrender.com/api' || API_BASE_URL; // hoặc lấy từ biến môi trường nếu có
+const API_URL = process.env.EXPO_PUBLIC_API_URL; // hoặc lấy từ biến môi trường nếu có
 
 const axiosInstance = axios.create({
     baseURL: API_URL,

@@ -1,6 +1,6 @@
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useState } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, SafeAreaView, ActivityIndicator } from 'react-native';
 import { getProgressByPlan } from '../../api/progressApi';
 import { getQuitplanByUserId } from '../../api/quitPlanApi';
 import { getUser } from '../../utils/authStorage';
@@ -9,25 +9,13 @@ export default function ProgressSummary({ days, moneySaved, healthImproved }) {
 
     const [progress, setProgress] = useState(null);
     const [error, setError] = useState(null);
-
-
-    // const fetchQuitPlan = async () => {
-    //     try {
-    //         const user = await getUser();
-    //         const id = user.id;
-
-    //         const response = await getQuitplanByUserId(id);
-    //         setQuitPlan(response.data);
-    //         // console.log('Quit Plan',response.data)
-    //     } catch (error) {
-    //         console.log('Faild to fetch progress', error);
-    //     }
-    // }
+    const [isLoading, setIsLoading] = useState(true);
 
     useFocusEffect(
         React.useCallback(() => {
             const fetchProgress = async () => {
                 try {
+                    setIsLoading(true);
                     setError(null);
                     const user = await getUser();
                     const id = user.id;
@@ -44,11 +32,24 @@ export default function ProgressSummary({ days, moneySaved, healthImproved }) {
                     setProgress(null);
                     setError('Không thể lấy tiến trình. Vui lòng thử lại sau.');
                     console.log('Faild to fetch progress', error);
+                } finally{
+                    setIsLoading(false);
                 }
             }
             fetchProgress();
         }, [])
     );
+
+    if (isLoading) {
+        return (
+          <SafeAreaView className="flex-1 justify-center items-center bg-gradient-to-br from-purple-500 to-pink-500">
+            <View className="bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl">
+              <ActivityIndicator size="large" color="#8B5CF6" />
+              <Text className="mt-4 text-gray-700 font-medium">Đang tải...</Text>
+            </View>
+          </SafeAreaView>
+        );
+      }
 
     return (
         <View className="bg-green-100 rounded-2xl p-4 shadow-sm">

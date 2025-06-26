@@ -1,15 +1,14 @@
 import axios from 'axios';
-const API_BASE_URL = process.env.API_BASE_URL || 'https://smokingswp.onrender.com/api';
 export const register = async (data) => {
-    return await axios.post(`${API_BASE_URL}/auth/register/send-otp`, data);
+    return await axios.post(`/auth/register/send-otp`, data);
 };
     
 export const login = async (data) => {
-    return await axios.post(`${API_BASE_URL}/auth/login`, data);
+    return await axios.post(`/auth/login`, data);
 };
 
 export const verifyEmail = async (data) => {
-    return await axios.post(`${API_BASE_URL}/auth/verify-otp`, data);
+    return await axios.post(`/auth/verify-otp`, data);
 }
 // export const forgotPassword = async (data) => {
 //     return await axios.post(`${BASE_URL}/fogot-password`, data);

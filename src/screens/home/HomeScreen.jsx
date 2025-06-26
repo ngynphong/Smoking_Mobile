@@ -6,11 +6,12 @@ import BlogPreviewList from '../../components/home/BlogPreviewList';
 import FloatingActionButton from '../../components/home/FloatingActionButton';
 import HeroBanner from '../../components/home/HeroBanner';
 import ServiceHighlights from '../../components/home/ServiceHighlights';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { getProfile } from '../../api/userApi';
 import { getUser } from '../../utils/authStorage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
 
 const progressSummary = {
   days: 3,
@@ -21,21 +22,23 @@ const progressSummary = {
 export default function HomeScreen() {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        setIsLoading(true);
-        const user = await getUser();
-        const userData = await getProfile(user.id);
-        setUser(userData.data.user);
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchUserData();
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchUserData = async () => {
+        try {
+          setIsLoading(true);
+          const user = await getUser();
+          const userData = await getProfile(user.id);
+          setUser(userData.data.user);
+        } catch (error) {
+          console.error('Error fetching user data:', error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      fetchUserData();
+    }, [])
+  );
 
   if (!user) {
     return null; // or a loading spinner
@@ -108,7 +111,7 @@ export default function HomeScreen() {
           <BlogPreviewList />
         </View>
       </ScrollView>
-      <FloatingActionButton />
+      {/* <FloatingActionButton /> */}
     </LinearGradient>
   );
 }

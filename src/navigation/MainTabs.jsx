@@ -14,6 +14,10 @@ import QuitPlanScreen from '../screens/quitPlan/QuitPlanScreen';
 import CreatePostScreen from '../screens/community/CreatePostScreen';
 import EditPostScreen from '../screens/community/EditPostScreen';
 import MyPostScreen from '../screens/profile/MyPostScreen';
+import MyQuitPlanScreen from '../screens/quitPlan/MyQuitPlanScreen';
+import SmokingStatusScreen from '../screens/profile/SmokingStatusScreen';
+import CreateQuitPlanRequest from '../screens/profile/CreateQuitPlanRequest';
+import RequestQuitPlanScreen from '../screens/profile/RequestQuitPlanScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -26,6 +30,10 @@ function ProfileStackScreen() {
             <Stack.Screen name="Badge" component={BadgeScreen} />
             <Stack.Screen name='MyPosts' component={MyPostScreen} />
             <Stack.Screen name="PostDetail" component={PostDetail} />
+            <Stack.Screen name="MyQuitPlan" component={MyQuitPlanScreen} />
+            <Stack.Screen name="SmokingStatus" component={SmokingStatusScreen} />
+            <Stack.Screen name="CreateQuitPlanRequest" component={CreateQuitPlanRequest} />
+            <Stack.Screen name="QuitPlanRequest" component={RequestQuitPlanScreen} />
         </Stack.Navigator>
     );
 };
@@ -37,6 +45,24 @@ function CommunityStackScreen() {
             <Stack.Screen name="PostDetail" component={PostDetail} />
             <Stack.Screen name="CreatePost" component={CreatePostScreen} />
             <Stack.Screen name="EditPost" component={EditPostScreen} />
+        </Stack.Navigator>
+    )
+};
+
+function HomeStackScreen() {
+    return (
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="HomeMain" component={HomeScreen} />
+            <Stack.Screen name="PostDetail" component={PostDetail} />
+        </Stack.Navigator>
+    )
+};
+
+function QuitPlanStackScreen() {
+    return (
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="QuitPlanMain" component={QuitPlanScreen} />
+            <Stack.Screen name="MyQuitPlan" component={MyQuitPlanScreen} />
         </Stack.Navigator>
     )
 }
@@ -67,8 +93,8 @@ export default function MainTabs() {
                 headerShown: false,
             })}
         >
-            <Tab.Screen options={{ title: 'Trang Chủ' }} name="Home" component={HomeScreen} />
-            <Tab.Screen options={{ title: 'Kế Hoạch' }} name="QuitPlan" component={QuitPlanScreen} />
+            <Tab.Screen options={{ title: 'Trang Chủ' }} name="Home" component={HomeStackScreen} />
+            <Tab.Screen options={{ title: 'Kế Hoạch' }} name="QuitPlan" component={QuitPlanStackScreen} />
             <Tab.Screen options={{ title: 'Cộng Đồng' }} name="Community" component={CommunityStackScreen} />
             <Tab.Screen options={{ title: 'Tiến Trình' }} name="Progress" component={ProgressScreen} />
             <Tab.Screen options={{ title: 'Hồ Sơ' }} name='Profile' component={ProfileStackScreen} />

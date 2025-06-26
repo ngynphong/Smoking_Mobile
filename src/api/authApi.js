@@ -1,5 +1,5 @@
 import axios from 'axios';
-const API_BASE_URL = process.env.API_BASE_URL || 'https://smokingswp.onrender.com/api';
+const API_BASE_URL = 'http://localhost:8080/api' || process.env.EXPO_BASE_URL;
 export const register = async (data) => {
     return await axios.post(`${API_BASE_URL}/auth/register/send-otp`, data);
 };

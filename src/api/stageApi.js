@@ -1,5 +1,5 @@
 import axios from '../configs/axios';
-const API_BASE_URL = process.env.API_BASE_URL || 'https://smokingswp.onrender.com/api';
+const API_BASE_URL = 'http://localhost:8080/api' || process.env.EXPO_BASE_URL;
 
 export const getStagebyPlanId = async(id) => {
     return await axios.get(`${API_BASE_URL}/stages/plan/${id}`);

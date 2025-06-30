@@ -1,33 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ActivityIndicator, ScrollView, SafeAreaView, TouchableOpacity } from 'react-native';
+import { View, Text, ActivityIndicator, ScrollView, SafeAreaView, TouchableOpacity, Image } from 'react-native';
 import { getQuitplanByUserId } from '../../api/quitPlanApi';
 import { getUser } from '../../utils/authStorage';
 import { getStagebyPlanId } from '../../api/stageApi';
-import { getTasksbyStageId } from '../../api/taskApi';
-import { ArrowLeft } from 'lucide-react-native';
+import { completeTask, getTasksbyStageId, getTaskCompleted } from '../../api/taskApi';
+import { ArrowLeft, ChevronDown, ChevronUp } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
-
-const TaskItem = ({ task }) => (
-  <View className="mb-2 p-3 bg-gray-100 rounded-md border border-gray-200">
-    <Text className="font-semibold text-gray-800">• {task.title}</Text>
-    <Text className="text-sm text-gray-600 mt-1">{task.description}</Text>
-  </View>
-);
-
-const StageItem = ({ stage, tasks }) => (
-  <View className="mb-6 p-4 bg-white rounded-xl shadow border border-gray-200">
-    <View className="mb-2">
-      <Text className="text-lg font-bold text-blue-600">{stage.title}</Text>
-      <Text className="text-sm text-gray-700 mt-1">{stage.description}</Text>
-      <Text className="text-xs text-gray-500 mt-1">
-        {new Date(stage.start_date).toLocaleDateString('vi-VN')} ➝ {new Date(stage.end_date).toLocaleDateString('vi-VN')}
-      </Text>
-    </View>
-    <View className="mt-2">
-      {tasks.map(task => <TaskItem key={task._id} task={task} />)}
-    </View>
-  </View>
-);
+import StageItem from '../../components/quitPlan/StageItem';
+import Loading from '../../components/Loading';
 
 export default function MyQuitPlanScreen() {
   const [plans, setPlans] = useState([]);
@@ -36,6 +16,8 @@ export default function MyQuitPlanScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigation = useNavigation();
+  const [expandedStages, setExpandedStages] = useState({});
+  const [completedTaskIds, setCompletedTaskIds] = useState([]);
 
   useEffect(() => {
     const fetchPlanData = async () => {
@@ -68,6 +50,25 @@ export default function MyQuitPlanScreen() {
         }
         setTasks(allTasks);
 
+        let completed = [];
+        for (const stageId of stageIds) {
+          try {
+            const res = await getTaskCompleted(stageId);
+            // console.log('getTaskCompleted for', stageId, res.data);
+            let arr = [];
+            if (Array.isArray(res.data)) {
+              arr = res.data;
+            } else if (res.data) {
+              arr = [res.data];
+            }
+            const completedIds = arr.filter(item => item.is_completed).map(item => item.task_id);
+            completed = completed.concat(completedIds);
+          } catch (err) {
+            console.log('Error getTaskCompleted', stageId, err);
+          }
+        }
+        setCompletedTaskIds(completed);
+        // console.log('Completed task', completed);
       } catch (err) {
         setError('Không thể tải dữ liệu kế hoạch. Vui lòng thử lại sau.');
         console.error('Lỗi khi tải dữ liệu kế hoạch:', err);
@@ -78,15 +79,18 @@ export default function MyQuitPlanScreen() {
     fetchPlanData();
   }, []);
 
+  const handleCompleteTask = async (taskId) => {
+    try {
+      await completeTask(taskId);
+      setCompletedTaskIds(prev => [...prev, taskId]);
+    } catch (e) {
+      // Có thể hiện toast lỗi nếu muốn
+    }
+  };
+ 
+
   if (isLoading) {
-    return (
-      <SafeAreaView className="flex-1 justify-center items-center bg-gradient-to-br from-purple-500 to-pink-500">
-        <View className="bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl">
-          <ActivityIndicator size="large" color="#8B5CF6" />
-          <Text className="mt-4 text-gray-700 font-medium">Đang tải...</Text>
-        </View>
-      </SafeAreaView>
-    );
+    return <Loading />;
   }
 
   if (error) {
@@ -98,17 +102,22 @@ export default function MyQuitPlanScreen() {
   }
 
   return (
-    <ScrollView className="flex-1 bg-gray-50 px-4 pt-4">
+    <ScrollView className="flex-1 bg-gray-50 px-2 pt-4" contentContainerStyle={{ paddingBottom: 100 }}>
       <TouchableOpacity className='p-2 absolute top-5 z-20' onPress={() => navigation.goBack()}>
         <ArrowLeft size={24} color="#374151" />
       </TouchableOpacity>
       <Text className="text-2xl font-bold text-center  p-6">Kế hoạch cai thuốc của tôi</Text>
 
       {plans.length === 0 ? (
-        <Text className="text-center text-gray-500">Không có kế hoạch nào để hiển thị.</Text>
+        <View>
+          <Text className="text-center text-gray-500">Không có kế hoạch nào để hiển thị.</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('CreateQuitPlanRequest')} className='border border-blue-500 p-2 rounded-lg mx-auto w-1/2 mt-4'>
+            <Text className="text-center text-blue-500 py-2">Yêu cầu tạo kế hoạch</Text>
+          </TouchableOpacity>
+        </View>
       ) : (
         plans.map(plan => (
-          <View key={plan._id} className="mb-6 p-4 bg-white rounded-xl shadow border border-gray-100">
+          <View key={plan._id} className="mb-6 p-2 bg-white rounded-xl shadow border border-gray-100">
             <View className="p-4 rounded-xl">
               <Text className="text-xl font-semibold text-gray-900 mb-1">{plan.name}</Text>
               <Text className="text-sm text-gray-700 mb-1">🎯 Lý do: {plan.reason}</Text>
@@ -116,13 +125,20 @@ export default function MyQuitPlanScreen() {
                 {new Date(plan.start_date).toLocaleDateString()} ➝ {new Date(plan.target_quit_date).toLocaleDateString()}
               </Text>
             </View>
+            <Image source={{ uri: plan.image }} className='h-52 w-full mb-2 rounded-xl' />
             {stages
               .filter(stage => stage.plan_id === plan._id)
               .map(stage => (
                 <StageItem
                   key={stage._id}
                   stage={stage}
-                  tasks={tasks.filter(t => t.stage_id === stage._id)}
+                  tasks={tasks.filter(t => t.stage_id === stage._id).map(task => ({
+                    ...task,
+                    completed: completedTaskIds.includes(task._id),
+                  }))}
+                  onCompleteTask={(taskId) => handleCompleteTask(taskId)}
+                  expanded={!!expandedStages[stage._id]}
+                  onToggle={() => setExpandedStages(prev => ({ ...prev, [stage._id]: !prev[stage._id] }))}
                 />
               ))}
           </View>

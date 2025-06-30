@@ -108,7 +108,7 @@ const SmokingStatusScreen = () => {
                     <Text className="text-base text-gray-700 mb-4">Chưa có thông tin tình trạng hút thuốc.</Text>
                     <TouchableOpacity
                         onPress={() => setShowModal(true)}
-                        className="bg-blue-600 rounded-full py-3 px-6"
+                        className="bg-blue-500 rounded-lg py-3 px-6"
                     >
                         <Text className="text-white font-semibold">Thêm Thông Tin</Text>
                     </TouchableOpacity>

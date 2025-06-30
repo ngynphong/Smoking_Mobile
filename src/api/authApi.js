@@ -1,4 +1,5 @@
-import axios from 'axios';
+import axios from '../configs/axios';
+
 export const register = async (data) => {
     return await axios.post(`/auth/register/send-otp`, data);
 };

@@ -5,7 +5,7 @@ import { getProgressByPlan } from '../../api/progressApi';
 import { getQuitplanByUserId } from '../../api/quitPlanApi';
 import { getUser } from '../../utils/authStorage';
 
-export default function ProgressSummary({ days, moneySaved, healthImproved }) {
+export default function ProgressSummary() {
 
     const [progress, setProgress] = useState(null);
     const [error, setError] = useState(null);
@@ -52,14 +52,14 @@ export default function ProgressSummary({ days, moneySaved, healthImproved }) {
       }
 
     return (
-        <View className="bg-green-100 rounded-2xl p-4 shadow-sm">
+        <View className="">
             <Text className="text-lg font-semibold text-green-800">🌿 Tiến trình cai thuốc</Text>
             {error ? (
                 <Text className="text-red-500 mt-2">{error}</Text>
             ) : progress ? (
                 <>
                     <Text>Tên kế hoạch: <Text className="font-bold">{progress.plan_name}</Text></Text>
-                    <Text className="mt-1">Giai đoạn: <Text className="font-bold">{progress.completed_stages} </Text></Text>
+                    <Text className="mt-1">Giai đoạn đã hoàn thành: <Text className="font-bold">{progress.completed_stages} </Text></Text>
                     <Text>Tiến trình: <Text className="font-bold">{progress.progress_percent}%</Text></Text>
                 </>
             ) : (

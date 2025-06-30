@@ -67,7 +67,7 @@ const CreateQuitPlanRequest = () => {
             <TouchableOpacity className='p-2 absolute z-20 top-1' onPress={() => navigation.goBack()}>
                 <ArrowLeft size={24} color="#374151" />
             </TouchableOpacity>
-            <Text className="text-2xl font-bold text-center text-gray-800 mb-4 mt-2">Gửi Yêu Cầu Kế Hoạch Cai Thuốc</Text>
+            <Text className="text-2xl font-bold text-center text-gray-800 mb-4 mt-2">Gửi Yêu Cầu Tạo Kế Hoạch</Text>
 
             <Text className="text-sm text-gray-700 mb-1">Tên kế hoạch:</Text>
             <TextInput className="border rounded-lg border-gray-200 px-3 py-2 mb-4" placeholder="Nhập tên kế hoạch" value={form.name} onChangeText={(v) => handleChange('name', v)} />
@@ -110,7 +110,7 @@ const CreateQuitPlanRequest = () => {
                 <CoachCard key={coach._id} coach={coach} selected={coach._id === selectedCoachId} onSelect={setSelectedCoachId} />
             ))}
 
-            <TouchableOpacity onPress={handleSubmit} className="mt-6 bg-blue-600 py-3 rounded-lg">
+            <TouchableOpacity onPress={handleSubmit} className="mt-6 bg-blue-500 py-3 rounded-lg">
                 <Text className="text-center text-white font-semibold">Gửi Yêu Cầu</Text>
             </TouchableOpacity>
         </ScrollView>

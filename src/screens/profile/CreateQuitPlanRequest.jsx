@@ -5,20 +5,21 @@ import { getAllCoaches } from '../../api/coachApi';
 import { ArrowLeft } from 'lucide-react-native';
 import { sendRequestQuitPlan } from '../../api/quitPlanApi';
 import { useNavigation } from '@react-navigation/native';
+import CoachCard from '../../components/CoachCard';
 
-const CoachCard = ({ coach, selected, onSelect }) => (
-    <TouchableOpacity
-        onPress={() => onSelect(coach._id)}
-        className={`flex-row items-center p-4 mb-3 rounded-xl border ${selected ? 'border-blue-500 bg-blue-50' : 'border-gray-200 bg-white'}`}
-    >
-        <Image source={{ uri: coach.coach_id.avatar_url }} className="w-16 h-16 rounded-full mr-4" />
-        <View className="flex-1">
-            <Text className="text-lg font-semibold text-gray-800">{coach.coach_id.name}</Text>
-            <Text className="text-sm text-gray-500">{coach.specialization}</Text>
-            <Text className="text-xs text-gray-400">Kinh nghiệm: {coach.experience_years} năm</Text>
-        </View>
-    </TouchableOpacity>
-);
+// const CoachCard = ({ coach, selected, onSelect }) => (
+//     <TouchableOpacity
+//         onPress={() => onSelect(coach._id)}
+//         className={`flex-row items-center p-4 mb-3 rounded-xl border ${selected ? 'border-blue-500 bg-blue-50' : 'border-gray-200 bg-white'}`}
+//     >
+//         <Image source={{ uri: coach.coach_id.avatar_url }} className="w-16 h-16 rounded-full mr-4" />
+//         <View className="flex-1">
+//             <Text className="text-lg font-semibold text-gray-800">{coach.coach_id.name}</Text>
+//             <Text className="text-sm text-gray-500">{coach.specialization}</Text>
+//             <Text className="text-xs text-gray-400">Kinh nghiệm: {coach.experience_years} năm</Text>
+//         </View>
+//     </TouchableOpacity>
+// );
 
 const CreateQuitPlanRequest = () => {
     const [coaches, setCoaches] = useState([]);
@@ -107,7 +108,7 @@ const CreateQuitPlanRequest = () => {
 
             <Text className="text-lg font-semibold text-gray-800 mb-2">Chọn Huấn Luyện Viên:</Text>
             {coaches.map(coach => (
-                <CoachCard key={coach._id} coach={coach} selected={coach._id === selectedCoachId} onSelect={setSelectedCoachId} />
+                <CoachCard key={coach._id} coach={coach} selected={coach.coach_id._id === selectedCoachId} onSelect={setSelectedCoachId} />
             ))}
 
             <TouchableOpacity onPress={handleSubmit} className="mt-6 bg-blue-500 py-3 rounded-lg">

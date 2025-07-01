@@ -19,6 +19,7 @@ import SmokingStatusScreen from '../screens/profile/SmokingStatusScreen';
 import CreateQuitPlanRequest from '../screens/profile/CreateQuitPlanRequest';
 import RequestQuitPlanScreen from '../screens/profile/RequestQuitPlanScreen';
 import { LinearGradient } from 'expo-linear-gradient';
+import FeedbackScreen from '../screens/FeedbackScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -36,6 +37,7 @@ function ProfileStackScreen() {
             <Stack.Screen name="CreateQuitPlanRequest" component={CreateQuitPlanRequest} />
             <Stack.Screen name="QuitPlanRequest" component={RequestQuitPlanScreen} />
             <Stack.Screen name="CreatePost" component={CreatePostScreen} />
+            <Stack.Screen name="Feedback" component={FeedbackScreen} />
         </Stack.Navigator>
     );
 };
@@ -56,6 +58,7 @@ function HomeStackScreen() {
         <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name="HomeMain" component={HomeScreen} />
             <Stack.Screen name="PostDetail" component={PostDetail} />
+            <Stack.Screen name="Feedback" component={FeedbackScreen} />
         </Stack.Navigator>
     )
 };
@@ -66,6 +69,7 @@ function QuitPlanStackScreen() {
             <Stack.Screen name="QuitPlanMain" component={QuitPlanScreen} />
             <Stack.Screen name="MyQuitPlan" component={MyQuitPlanScreen} />
             <Stack.Screen name="CreateQuitPlanRequest" component={CreateQuitPlanRequest} />
+            <Stack.Screen name="Feedback" component={FeedbackScreen} />
         </Stack.Navigator>
     )
 }

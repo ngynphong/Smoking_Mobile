@@ -147,7 +147,7 @@ export default function RankingPreview() {
                 {/* Full Leaderboard */}
                 <View className="bg-white rounded-2xl shadow-lg mx-2 overflow-hidden">
                     <View className="bg-gradient-to-r from-indigo-500 to-purple-600 p-4">
-                        <Text className="text-white font-bold text-lg text-center">
+                        <Text className="text-black font-bold text-lg text-center">
                             Bảng Xếp Hạng Chi Tiết
                         </Text>
                     </View>

@@ -5,13 +5,15 @@ import RankingPreview from '../../components/home/RankingPreview';
 import BlogPreviewList from '../../components/home/BlogPreviewList';
 import HeroBanner from '../../components/home/HeroBanner';
 import ServiceHighlights from '../../components/home/ServiceHighlights';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { getProfile } from '../../api/userApi';
 import { getUser } from '../../utils/authStorage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import SubscriptionPackages from '../../components/home/SubscriptionPackages';
+import StreakNoSmoke from '../../components/home/StreakNoSmoke';
+import FeedbackSlider from '../../components/home/FeedbackSlider';
 
 const quotes = [
   "Nếu bạn muốn thành công, hãy làm những việc bạn không muốn làm.",
@@ -27,6 +29,7 @@ const quotes = [
 export default function HomeScreen() {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+
   useFocusEffect(
     React.useCallback(() => {
       const fetchUserData = async () => {
@@ -90,7 +93,10 @@ export default function HomeScreen() {
         <View className="mx-4 mb-4 bg-white rounded-2xl shadow-lg overflow-hidden">
           <HeroBanner />
         </View>
-
+        {/* Card: StreakNoSmoke */}
+        <View className="mx-4 mt-2 mb-4 bg-white rounded-2xl shadow-lg p-5">
+          <StreakNoSmoke />
+        </View>
         {/* Card: ProgressSummary */}
         <View className="mx-4 mt-2 mb-4 bg-green-100 rounded-2xl shadow-lg p-5">
           <ProgressSummary />
@@ -117,6 +123,8 @@ export default function HomeScreen() {
         </View>
 
         <SubscriptionPackages />
+
+        <FeedbackSlider />
 
       </ScrollView>
       {/* <FloatingActionButton /> */}

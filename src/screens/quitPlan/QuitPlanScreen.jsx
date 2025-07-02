@@ -109,7 +109,7 @@ const QuitPlanScreen = () => {
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <View className='flex-1 mb-14'>
       <ScrollView className="flex-1 bg-gray-50 px-4 pt-4">
         <Text className="text-2xl font-bold text-center p-6">Kế hoạch cai thuốc</Text>
         {plans.length === 0 ? (
@@ -127,7 +127,7 @@ const QuitPlanScreen = () => {
                   <Text className="text-xl font-semibold text-gray-900 mb-1">{plan.name}</Text>
                   <Text className="text-sm text-gray-700 mb-1">🎯 Lý do: {plan.reason}</Text>
                   <Text className="text-xs text-gray-500">
-                    {new Date(plan.start_date).toLocaleDateString()} ➝ {new Date(plan.target_quit_date).toLocaleDateString()}
+                    {new Date(plan.start_date).toLocaleDateString('vi-VN')} ➝ {new Date(plan.target_quit_date).toLocaleDateString('vi-VN')}
                   </Text>
                 </View>
                 <TouchableOpacity className='mt-2 ml-4 border border-blue-500 h-10 rounded-xl' onPress={() => handleCloneQuitPlan(plan._id)}>
@@ -154,7 +154,7 @@ const QuitPlanScreen = () => {
       </ScrollView>
       <TouchableOpacity
         onPress={() => navigation.navigate('MyQuitPlan')}
-        className="absolute bottom-20 right-2 bg-blue-500 rounded-full px-3 py-2 flex-row items-center shadow-lg shadow-blue-400/40 active:opacity-80"
+        className="absolute bottom-6 right-2 bg-blue-500 rounded-full px-3 py-2 flex-row items-center shadow-lg shadow-blue-400/40 active:opacity-80"
         activeOpacity={0.85}
       >
         <Ionicons name="person-circle-outline" size={24} color="#fff" style={{ marginRight: 6 }} />

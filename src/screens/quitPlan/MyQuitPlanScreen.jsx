@@ -87,7 +87,7 @@ export default function MyQuitPlanScreen() {
       // Có thể hiện toast lỗi nếu muốn
     }
   };
- 
+
 
   if (isLoading) {
     return <Loading />;
@@ -118,12 +118,14 @@ export default function MyQuitPlanScreen() {
       ) : (
         plans.map(plan => (
           <View key={plan._id} className="mb-6 p-2 bg-white rounded-xl shadow border border-gray-100">
-            <View className="p-4 rounded-xl">
-              <Text className="text-xl font-semibold text-gray-900 mb-1">{plan.name}</Text>
-              <Text className="text-sm text-gray-700 mb-1">🎯 Lý do: {plan.reason}</Text>
-              <Text className="text-xs text-gray-500">
-                {new Date(plan.start_date).toLocaleDateString()} ➝ {new Date(plan.target_quit_date).toLocaleDateString()}
-              </Text>
+            <View className='flex-row'>
+              <View className="p-4 rounded-xl">
+                <Text className="text-xl font-semibold text-gray-900 mb-1">{plan.name}</Text>
+                <Text className="text-sm text-gray-700 mb-1">🎯 Lý do: {plan.reason}</Text>
+                <Text className="text-xs text-gray-500">
+                  {new Date(plan.start_date).toLocaleDateString()} ➝ {new Date(plan.target_quit_date).toLocaleDateString()}
+                </Text>
+              </View>
             </View>
             <Image source={{ uri: plan.image }} className='h-52 w-full mb-2 rounded-xl' />
             {stages

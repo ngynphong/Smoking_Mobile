@@ -28,7 +28,15 @@ axiosInstance.interceptors.response.use(
         return Promise.reject(error);
     }
 );
-
+axiosInstance.interceptors.response.use(
+    response => response,
+    error => {
+        // Hiện toast hoặc log lỗi
+        showToast(error.message);
+        // console.error(error)
+        return Promise.reject(error);
+    }
+);
 // Nếu muốn xử lý token hết hạn, hãy xử lý ở nơi gọi API hoặc truyền hàm callback điều hướng
 
 export default axiosInstance;

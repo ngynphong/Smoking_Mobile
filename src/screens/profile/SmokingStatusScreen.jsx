@@ -5,6 +5,7 @@ import { getUser } from '../../utils/authStorage';
 import { createSmokingStatus, deleteSmokingStatus, getSmokingStatus } from '../../api/smokingStatusApi';
 import { ArrowLeft } from 'lucide-react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import Loading from '../../components/Loading';
 const SmokingStatusScreen = () => {
     const [form, setForm] = useState({
         frequency: 'daily',
@@ -17,23 +18,25 @@ const SmokingStatusScreen = () => {
     const [showModal, setShowModal] = useState(false);
     const [loading, setLoading] = useState(true);
     const navigation = useNavigation();
+
+    const fetchStatus = async () => {
+        try {
+            const user = await getUser();
+            const res = await getSmokingStatus(user.id);
+            if (res?.data.smokingStatus) {
+                setStatus(res.data.smokingStatus);
+            } else {
+                setStatus(null);
+            }
+        } catch (error) {
+            setStatus(null);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useFocusEffect(
         React.useCallback(() => {
-            const fetchStatus = async () => {
-                try {
-                    const user = await getUser();
-                    const res = await getSmokingStatus(user.id);
-                    if (res?.data.smokingStatus) {
-                        setStatus(res.data.smokingStatus);
-                    } else {
-                        setStatus(null);
-                    }
-                } catch (error) {
-                    setStatus(null);
-                } finally {
-                    setLoading(false);
-                }
-            };
             fetchStatus();
         }, [])
     )
@@ -54,6 +57,7 @@ const SmokingStatusScreen = () => {
             const res = await createSmokingStatus(user.id, payload);
             setStatus(res.data);
             setShowModal(false);
+            await fetchStatus();
             alert('Đã lưu trạng thái hút thuốc thành công');
         } catch (error) {
             alert('Có lỗi xảy ra, vui lòng thử lại.');
@@ -76,9 +80,7 @@ const SmokingStatusScreen = () => {
 
     if (loading) {
         return (
-            <View className="flex-1 justify-center items-center">
-                <Text>Đang tải...</Text>
-            </View>
+            <Loading />
         );
     }
 

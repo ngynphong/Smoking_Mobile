@@ -126,9 +126,6 @@ export default function MyQuitPlanScreen() {
                   {new Date(plan.start_date).toLocaleDateString()} ➝ {new Date(plan.target_quit_date).toLocaleDateString()}
                 </Text>
               </View>
-              <TouchableOpacity className='mt-2 left-[-75] border border-blue-500 h-10 rounded-xl' onPress={() => navigation.navigate('Feedback', { planId: plan._id, coachId: plan.coach_id })}>
-                <Text className='text-center my-auto text-blue-500 p-2'>Đánh giá</Text>
-              </TouchableOpacity>
             </View>
             <Image source={{ uri: plan.image }} className='h-52 w-full mb-2 rounded-xl' />
             {stages

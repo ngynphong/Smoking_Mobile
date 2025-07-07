@@ -7,12 +7,18 @@ import SplashScreen from '../screens/SplashScreen';
 import AuthStack from './AuthStack';
 import { AuthContext } from '../contexts/AuthContext';
 import OnboardingScreen from '../screens/OnboardingScreen';
+import { setupAxiosInterceptors } from '../configs/axios';
 
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
-  const { authStatus, isLoading } = useContext(AuthContext);
+  const { authStatus, isLoading, logout } = useContext(AuthContext);
   const [isFirstLaunch, setIsFirstLaunch] = useState(null);
+
+  useEffect(() => {
+    // Setup axios interceptor
+    setupAxiosInterceptors(logout);
+  }, [logout]);
 
   useEffect(() => {
     const checkFirstLaunch = async () => {

@@ -116,7 +116,7 @@ export default function LoginScreen() {
 
                 {/* Remember Me & Forgot Password */}
 
-                <TouchableOpacity className='mb-4 flex-row justify-end'>
+                <TouchableOpacity className='mb-4 flex-row justify-end' onPress={() => navigation.navigate('ForgotPassword')}>
                     <Text className="text-gray-600">Quên mật khẩu?</Text>
                 </TouchableOpacity>
 

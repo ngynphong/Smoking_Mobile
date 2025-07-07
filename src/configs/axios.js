@@ -20,23 +20,22 @@ axiosInstance.interceptors.request.use(
     (error) => Promise.reject(error)
 );
 
-// Add interceptor to handle errors
-axiosInstance.interceptors.response.use(
-    (response) => response,
-    (error) => {
-        console.error('API Error:', error.response?.data || error.message);
-        return Promise.reject(error);
-    }
-);
-axiosInstance.interceptors.response.use(
-    response => response,
-    error => {
-        // Hiện toast hoặc log lỗi
-        showToast(error.message);
-        // console.error(error)
-        return Promise.reject(error);
-    }
-);
-// Nếu muốn xử lý token hết hạn, hãy xử lý ở nơi gọi API hoặc truyền hàm callback điều hướng
+export const setupAxiosInterceptors = (logout) => {
+    axiosInstance.interceptors.response.use(
+        (response) => response,
+        (error) => {
+            // Check for 401 Unauthorized error
+            if (error.response && error.response.status === 401) {
+                // Token is expired or invalid, trigger logout
+                if (logout) {
+                    logout();
+                }
+            }
+            console.error('API Error:', error.response?.data || error.message);
+            return Promise.reject(error);
+        }
+    );
+};
+
 
 export default axiosInstance;

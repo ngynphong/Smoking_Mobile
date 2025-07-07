@@ -156,11 +156,10 @@ export default function ProfileScreen() {
     }
   };
 
-  const getRoleBadge = (role) => {
-    switch (role?.toLowerCase()) {
-      case 'admin': return '👑';
-      case 'moderator': return '🛡️';
-      case 'premium': return '💎';
+  const getRoleBadge = (subscriptionType) => {
+    switch (subscriptionType?.toLowerCase()) {
+      case 'premium': return '👑';
+      case 'plus': return '💎';
       default: return '👤';
     }
   };
@@ -200,7 +199,7 @@ export default function ProfileScreen() {
                   className="px-3 py-1 rounded-full flex-row items-center"
                   style={{ backgroundColor: getRoleColor(userData.role) + '20' }}
                 >
-                  <Text className="text-xs mr-1">{getRoleBadge(userData.role)}</Text>
+                  <Text className="text-xs mr-1">{getRoleBadge(userData.membership.subscriptionType)}</Text>
                   <Text
                     className="text-xs font-semibold capitalize"
                     style={{ color: getRoleColor(userData.role) }}

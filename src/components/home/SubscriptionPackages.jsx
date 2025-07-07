@@ -9,6 +9,8 @@ import {
     StatusBar,
     SafeAreaView,
     ActivityIndicator,
+    Linking,
+    Alert,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -16,11 +18,15 @@ import { Ionicons } from '@expo/vector-icons';
 const { width, height } = Dimensions.get('window');
 
 import { getPackages } from '../../api/packageApi';
+import { createSubscription, createPaymentLink } from '../../api/paymentApi';
+import { getMyActiveSubscription } from '../../api/subscriptionApi';
 
 const SubscriptionPackages = () => {
     const [currentPackage, setCurrentPackage] = useState(0);
     const [packages, setPackages] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [paymentLoading, setPaymentLoading] = useState(false);
+    const [activeSubscriptions, setActiveSubscriptions] = useState([]);
     const [error, setError] = useState(null);
     const fadeAnim = useRef(new Animated.Value(1)).current;
     const scaleAnim = useRef(new Animated.Value(1)).current;
@@ -115,28 +121,74 @@ const SubscriptionPackages = () => {
             };
         });
     };
+    
+    const handlePayment = async (pkg) => {
+        if (pkg.price === 0) {
+            Alert.alert("Thành công", "Bạn đã chọn gói miễn phí.");
+            return;
+        }
+
+        setPaymentLoading(true);
+        try {
+            // Step 1: Create a subscription
+            const subResponse = await createSubscription(pkg._id);
+            const subscriptionId = subResponse.data.subscription._id;
+
+            if (!subscriptionId) {
+                throw new Error("Không thể tạo gói đăng ký.");
+            }
+
+            // Step 2: Create a payment link
+            const paymentResponse = await createPaymentLink(subscriptionId);
+            const checkoutUrl = paymentResponse.data.checkoutUrl;
+            
+            if (checkoutUrl) {
+                // Step 3: Open the checkout URL
+                await Linking.openURL(checkoutUrl);
+            } else {
+                throw new Error("Không thể tạo liên kết thanh toán.");
+            }
+        } catch (error) {
+            console.error('Payment Error:', error.response ? error.response.data : error);
+            const errorMessage = error.response?.data?.message || error.message || "Đã xảy ra lỗi trong quá trình thanh toán.";
+            Alert.alert("Lỗi", errorMessage);
+        } finally {
+            setPaymentLoading(false);
+        }
+    };
 
     const fetchPackages = async () => {
         try {
             setLoading(true);
             setError(null);
-            const response = await getPackages();
-            const data = response.data.packages;
 
-            if (response.data) {
-                const transformedPackages = transformPackageData(data);
+            // Fetch packages and active subscription in parallel
+            const [packagesResponse, activeSubResponse] = await Promise.all([
+                getPackages(),
+                getMyActiveSubscription()
+            ]);
+
+            const packagesData = packagesResponse.data.packages;
+            if (packagesResponse.data) {
+                const transformedPackages = transformPackageData(packagesData);
                 setPackages(transformedPackages);
-                // Set initial package to first one or find the popular one
                 const popularIndex = transformedPackages.findIndex(pkg => pkg.popular);
                 setCurrentPackage(popularIndex !== -1 ? popularIndex : 0);
             } else {
-                throw new Error(data.message || 'Failed to fetch packages');
+                throw new Error(packagesResponse.data.message || 'Failed to fetch packages');
             }
+
+            if (activeSubResponse.data && Array.isArray(activeSubResponse.data)) {
+                setActiveSubscriptions(activeSubResponse.data);
+            }
+
         } catch (error) {
-            console.error('Error fetching packages:', error);
-            setError(error.message);
-            // Fallback to empty array or show error state
-            setPackages([]);
+            console.error('Error fetching data:', error);
+            // Don't set a generic error message if it's just that there's no active sub
+            if (error.response?.status !== 404) {
+                setError(error.message);
+            }
+            setPackages([]); // Fallback to empty array or show error state
         } finally {
             setLoading(false);
         }
@@ -204,38 +256,97 @@ const SubscriptionPackages = () => {
             setCurrentPackage(pageNum);
         }
     };
+    const renderPackageCard = (pkg, index) => {
+        const isCurrentUserPackage = activeSubscriptions.some(sub => sub.package_id?._id === pkg.apiData?._id);
+        const buttonText = isCurrentUserPackage ? "Gói của bạn" : pkg.buttonText;
+        const isButtonDisabled = isCurrentUserPackage || paymentLoading;
 
-    const renderPackageCard = (pkg, index) => (
-        <View key={pkg.id} style={{ width }} className="px-10 my-4">
-            <LinearGradient
-                colors={pkg.bgColors}
-                className="rounded-2xl p-4 mx-1 shadow-lg relative overflow-hidden"
-                style={{
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.3,
-                    shadowRadius: 12,
-                    elevation: 4,
-                }}
-            >
-                {/* Popular Badge */}
-                {pkg.popular && (
-                    <LinearGradient
-                        colors={['#fbbf24', '#f59e0b']}
-                        className="absolute top-3 right-3 flex-row items-center px-2 py-1 rounded-full z-10"
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 0 }}
-                    >
-                        <Ionicons name="star" size={12} color="white" />
-                        <Text className="text-white text-xs font-semibold ml-1">Phổ biến</Text>
-                    </LinearGradient>
-                )}
+        return (
+            <View key={pkg.id} style={{ width }} className="px-10 my-4">
+                <LinearGradient
+                    colors={pkg.bgColors}
+                    className="rounded-2xl p-4 mx-1 shadow-lg relative overflow-hidden"
+                    style={{
+                        shadowColor: '#000',
+                        shadowOffset: { width: 0, height: 2 },
+                        shadowOpacity: 0.3,
+                        shadowRadius: 12,
+                        elevation: 4,
+                    }}
+                >
+                    {/* Popular Badge */}
+                    {pkg.popular && (
+                        <LinearGradient
+                            colors={['#fbbf24', '#f59e0b']}
+                            className="absolute top-3 right-3 flex-row items-center px-2 py-1 rounded-full z-10"
+                            start={{ x: 0, y: 0 }}
+                            end={{ x: 1, y: 0 }}
+                        >
+                            <Ionicons name="star" size={12} color="white" />
+                            <Text className="text-white text-xs font-semibold ml-1">Phổ biến</Text>
+                        </LinearGradient>
+                    )}
 
-                {/* Package Header */}
-                <View className="items-center mb-4">
-                    <LinearGradient
-                        colors={pkg.colors}
-                        className="w-16 h-16 rounded-full items-center justify-center mb-3"
+                    {/* Package Header */}
+                    <View className="items-center mb-4">
+                        <LinearGradient
+                            colors={pkg.colors}
+                            className="w-16 h-16 rounded-full items-center justify-center mb-3"
+                            style={{
+                                shadowColor: '#000',
+                                shadowOffset: { width: 0, height: 2 },
+                                shadowOpacity: 0.25,
+                                shadowRadius: 4,
+                                elevation: 4,
+                            }}
+                            start={{ x: 0, y: 0 }}
+                            end={{ x: 1, y: 1 }}
+                        >
+                            <Ionicons name={pkg.icon} size={28} color="white" />
+                        </LinearGradient>
+
+                        <Text className="text-2xl font-bold text-slate-800 mb-1">{pkg.name}</Text>
+
+                        <View className="flex-row items-baseline justify-center">
+                            <Text className="text-3xl font-bold text-slate-800">{pkg.price}</Text>
+                            {pkg.period !== 'Mãi mãi' && (
+                                <Text className="text-slate-600 ml-1 text-sm">/{pkg.period}</Text>
+                            )}
+                        </View>
+                    </View>
+
+                    {/* Benefits Description */}
+                    <View className="items-center mb-4">
+                        <Text className="text-base font-semibold text-slate-800 text-center mb-1 leading-5">
+                            {pkg.title}
+                        </Text>
+                        <Text className="text-sm text-slate-600 text-center leading-4">
+                            {pkg.subtitle}
+                        </Text>
+                    </View>
+
+                    {/* Features List */}
+                    <View className="mb-5">
+                        {pkg.features.map((feature, featureIndex) => (
+                            <View key={featureIndex} className="flex-row items-center mb-2">
+                                <LinearGradient
+                                    colors={pkg.colors}
+                                    className="w-5 h-5 rounded-full items-center justify-center mr-2"
+                                    start={{ x: 0, y: 0 }}
+                                    end={{ x: 1, y: 1 }}
+                                >
+                                    <Ionicons name="checkmark" size={12} color="white" />
+                                </LinearGradient>
+                                <Text className="text-sm text-gray-700 font-medium flex-1">
+                                    {feature}
+                                </Text>
+                            </View>
+                        ))}
+                    </View>
+
+                    {/* Action Button */}
+                    <TouchableOpacity
+                        className="shadow-md"
                         style={{
                             shadowColor: '#000',
                             shadowOffset: { width: 0, height: 2 },
@@ -243,80 +354,27 @@ const SubscriptionPackages = () => {
                             shadowRadius: 4,
                             elevation: 4,
                         }}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 1 }}
+                        activeOpacity={0.8}
+                        onPress={() => handlePayment(pkg.apiData)}
+                        disabled={isButtonDisabled}
                     >
-                        <Ionicons name={pkg.icon} size={28} color="white" />
-                    </LinearGradient>
-
-                    <Text className="text-2xl font-bold text-slate-800 mb-1">{pkg.name}</Text>
-
-                    <View className="flex-row items-baseline justify-center">
-                        <Text className="text-3xl font-bold text-slate-800">{pkg.price}</Text>
-                        {pkg.period !== 'Mãi mãi' && (
-                            <Text className="text-slate-600 ml-1 text-sm">/{pkg.period}</Text>
-                        )}
-                    </View>
-                </View>
-
-                {/* Benefits Description */}
-                <View className="items-center mb-4">
-                    <Text className="text-base font-semibold text-slate-800 text-center mb-1 leading-5">
-                        {pkg.title}
-                    </Text>
-                    <Text className="text-sm text-slate-600 text-center leading-4">
-                        {pkg.subtitle}
-                    </Text>
-                </View>
-
-                {/* Features List */}
-                <View className="mb-5">
-                    {pkg.features.map((feature, featureIndex) => (
-                        <View key={featureIndex} className="flex-row items-center mb-2">
-                            <LinearGradient
-                                colors={pkg.colors}
-                                className="w-5 h-5 rounded-full items-center justify-center mr-2"
-                                start={{ x: 0, y: 0 }}
-                                end={{ x: 1, y: 1 }}
-                            >
-                                <Ionicons name="checkmark" size={12} color="white" />
-                            </LinearGradient>
-                            <Text className="text-sm text-gray-700 font-medium flex-1">
-                                {feature}
-                            </Text>
-                        </View>
-                    ))}
-                </View>
-
-                {/* Action Button */}
-                <TouchableOpacity
-                    className="shadow-md"
-                    style={{
-                        shadowColor: '#000',
-                        shadowOffset: { width: 0, height: 2 },
-                        shadowOpacity: 0.25,
-                        shadowRadius: 4,
-                        elevation: 4,
-                    }}
-                    activeOpacity={0.8}
-                    onPress={() => {
-                        // Handle package selection
-                        console.log('Selected package:', pkg.apiData);
-                        // You can add your package selection logic here
-                    }}
-                >
-                    <LinearGradient
-                        colors={pkg.buttonColors}
-                        className="py-3 rounded-xl items-center justify-center"
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 0 }}
-                    >
-                        <Text className="text-white text-base font-bold">{pkg.buttonText}</Text>
-                    </LinearGradient>
-                </TouchableOpacity>
-            </LinearGradient>
-        </View>
-    );
+                        <LinearGradient
+                            colors={isCurrentUserPackage ? ['#9ca3af', '#6b7280'] : pkg.buttonColors}
+                            className="py-3 rounded-xl items-center justify-center flex-row"
+                            start={{ x: 0, y: 0 }}
+                            end={{ x: 1, y: 0 }}
+                        >
+                            {paymentLoading && currentPackage === index ? (
+                                <ActivityIndicator size="small" color="white" className="mr-2" />
+                            ) : (
+                                <Text className="text-white text-base font-bold">{buttonText}</Text>
+                            )}
+                        </LinearGradient>
+                    </TouchableOpacity>
+                </LinearGradient>
+            </View>
+        );
+    };
 
     // Loading state
     if (loading) {

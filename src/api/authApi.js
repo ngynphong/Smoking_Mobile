@@ -11,10 +11,15 @@ export const login = async (data) => {
 export const verifyEmail = async (data) => {
     return await axios.post(`/auth/verify-otp`, data);
 }
-// export const forgotPassword = async (data) => {
-//     return await axios.post(`${BASE_URL}/fogot-password`, data);
-// };
 
-// export const resetPassword = async (token, data) => {
-//     return await axios.post(`${BASE_URL}/resset-password/${token}`, data);
-// };
+export const requestPasswordReset = async (data) => {
+    return await axios.post('/auth/request-password-reset', data);
+};
+
+export const verifyResetOtp = async (data) => {
+    return await axios.post('/auth/verify-reset-otp', data);
+};
+
+export const resetPassword = async (data) => {
+    return await axios.post('/auth/reset-password', data);
+};

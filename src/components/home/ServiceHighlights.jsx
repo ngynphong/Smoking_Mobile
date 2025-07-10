@@ -1,5 +1,6 @@
 import { View, Text, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
 const services = [
     { icon: "file-document", label: "Tạo kế hoạch" },
@@ -8,6 +9,7 @@ const services = [
 ];
 
 export default function ServiceHighlights() {
+    const navigation = useNavigation();
     return (
         <View className="">
             {/* Section Title */}
@@ -23,6 +25,7 @@ export default function ServiceHighlights() {
                         key={index}
                         className="w-[30%] items-center justify-center p-4 mb-4 bg-blue-50 rounded-xl shadow-sm border border-blue-100 active:bg-blue-100"
                         style={{ aspectRatio: 1 }} // Ensures cards are square
+                        onPress={() => item.label === "Tạo kế hoạch" ? navigation.navigate('CreateQuitPlanRequest') : navigation.navigate('MyMeetings')}
                     >
                         <MaterialCommunityIcons name={item.icon} size={40} color="#4A90E2" />
                         <Text className="text-center mt-2 text-gray-700 font-medium text-sm">

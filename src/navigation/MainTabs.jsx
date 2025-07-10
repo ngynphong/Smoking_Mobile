@@ -20,6 +20,8 @@ import CreateQuitPlanRequest from '../screens/profile/CreateQuitPlanRequest';
 import RequestQuitPlanScreen from '../screens/profile/RequestQuitPlanScreen';
 import { LinearGradient } from 'expo-linear-gradient';
 import FeedbackScreen from '../screens/FeedbackScreen';
+import ChatScreen from '../screens/chat/ChatScreen';
+import MyMeetingsScreen from '../screens/meeting/MyMeetingsScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -59,6 +61,9 @@ function HomeStackScreen() {
             <Stack.Screen name="HomeMain" component={HomeScreen} />
             <Stack.Screen name="PostDetail" component={PostDetail} />
             <Stack.Screen name="Feedback" component={FeedbackScreen} />
+            <Stack.Screen name="Chat" component={ChatScreen} />
+            <Stack.Screen name="CreateQuitPlanRequest" component={CreateQuitPlanRequest} />
+            <Stack.Screen name="MyMeetings" component={MyMeetingsScreen} />
         </Stack.Navigator>
     )
 };

@@ -115,6 +115,22 @@ export default function ProfileScreen() {
       onPress: () => navigation.navigate('QuitPlanRequest')
     },
     {
+      icon: 'calendar-outline',
+      title: 'Đặt lịch với Coach',
+      subtitle: 'Tìm và đặt lịch hẹn với chuyên gia',
+      color: '#D946EF',
+      bgColor: '#FAE8FF',
+      onPress: () => navigation.navigate('CoachList')
+    },
+    {
+      icon: 'list-outline',
+      title: 'Lịch hẹn của tôi',
+      subtitle: 'Xem các cuộc hẹn sắp tới và đã qua',
+      color: '#0EA5E9',
+      bgColor: '#E0F2FE',
+      onPress: () => navigation.navigate('MyMeetings')
+    },
+    {
       icon: 'settings-outline',
       title: 'Cài đặt',
       subtitle: 'Tùy chỉnh ứng dụng',

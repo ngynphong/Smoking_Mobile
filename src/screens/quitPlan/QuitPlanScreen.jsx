@@ -122,7 +122,7 @@ const QuitPlanScreen = () => {
         ) : (
           plans.map(plan => (
             <View key={plan._id} className="mb-6 p-4 bg-white rounded-xl shadow border border-gray-100">
-              <View className='flex-row'>
+              <View className='flex-row relative'>
                 <View className="p-2 rounded-xl">
                   <Text className="text-xl font-semibold text-gray-900 mb-1">{plan.name}</Text>
                   <Text className="text-sm text-gray-700 mb-1">🎯 Lý do: {plan.reason}</Text>
@@ -130,7 +130,7 @@ const QuitPlanScreen = () => {
                     {new Date(plan.start_date).toLocaleDateString('vi-VN')} ➝ {new Date(plan.target_quit_date).toLocaleDateString('vi-VN')}
                   </Text>
                 </View>
-                <TouchableOpacity className='mt-2 ml-4 border border-blue-500 h-10 rounded-xl' onPress={() => handleCloneQuitPlan(plan._id)}>
+                <TouchableOpacity className='border border-blue-500 h-10 rounded-xl absolute right-0' onPress={() => handleCloneQuitPlan(plan._id)}>
                   <Text className='text-center my-auto text-blue-500 p-2'>Sử dụng</Text>
                 </TouchableOpacity>
               </View>

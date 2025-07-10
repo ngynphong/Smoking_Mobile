@@ -14,6 +14,7 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import SubscriptionPackages from '../../components/home/SubscriptionPackages';
 import StreakNoSmoke from '../../components/home/StreakNoSmoke';
 import FeedbackSlider from '../../components/home/FeedbackSlider';
+import FloatingActionButton from '../../components/home/FloatingActionButton';
 
 const quotes = [
   "Nếu bạn muốn thành công, hãy làm những việc bạn không muốn làm.",
@@ -127,7 +128,7 @@ export default function HomeScreen() {
         <FeedbackSlider />
 
       </ScrollView>
-      {/* <FloatingActionButton /> */}
+      <FloatingActionButton />
     </LinearGradient>
   );
 }

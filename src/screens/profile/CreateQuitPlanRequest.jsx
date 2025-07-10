@@ -111,7 +111,7 @@ const CreateQuitPlanRequest = () => {
                 <CoachCard key={coach._id} coach={coach} selected={coach.coach_id._id === selectedCoachId} onSelect={setSelectedCoachId} />
             ))}
 
-            <TouchableOpacity onPress={handleSubmit} className="mt-6 bg-blue-500 py-3 rounded-lg">
+            <TouchableOpacity onPress={handleSubmit} className="mt-1 mb-28 bg-blue-500 py-3 rounded-lg">
                 <Text className="text-center text-white font-semibold">Gửi Yêu Cầu</Text>
             </TouchableOpacity>
         </ScrollView>

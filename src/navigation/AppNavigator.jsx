@@ -8,6 +8,11 @@ import AuthStack from './AuthStack';
 import { AuthContext } from '../contexts/AuthContext';
 import OnboardingScreen from '../screens/OnboardingScreen';
 import { setupAxiosInterceptors } from '../configs/axios';
+import ChatScreen from '../screens/chat/ChatScreen';
+import ChatHistoryScreen from '../screens/chat/ChatHistoryScreen';
+import CoachListScreen from '../screens/meeting/CoachListScreen';
+import BookingScreen from '../screens/meeting/BookingScreen';
+import MyMeetingsScreen from '../screens/meeting/MyMeetingsScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -53,7 +58,14 @@ export default function AppNavigator() {
           <Stack.Screen name="AuthStack" component={AuthStack} />
         )}
         {!isFirstLaunch && authStatus && (
-          <Stack.Screen name="MainTabs" component={MainTabs} />
+          <>
+            <Stack.Screen name="MainTabs" component={MainTabs} />
+            <Stack.Screen name="ChatHistory" component={ChatHistoryScreen} options={{ headerShown: true, title: 'Lịch sử chat'}} />
+            <Stack.Screen name="Chat" component={ChatScreen} options={{ headerShown: true, title: 'Chatbot' }} />
+            <Stack.Screen name="CoachList" component={CoachListScreen} />
+            <Stack.Screen name="BookingScreen" component={BookingScreen}/>
+            <Stack.Screen name="MyMeetings" component={MyMeetingsScreen} />
+          </>
         )}
       </Stack.Navigator>
     </NavigationContainer>

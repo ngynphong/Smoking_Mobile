@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import SplashScreen from '../screens/SplashScreen';
 import AuthStack from './AuthStack';
 import { AuthContext } from '../contexts/AuthContext';
+import { TabBarProvider } from '../contexts/TabBarContext';
 import OnboardingScreen from '../screens/OnboardingScreen';
 import { setupAxiosInterceptors } from '../configs/axios';
 import ChatScreen from '../screens/chat/ChatScreen';
@@ -43,31 +44,33 @@ export default function AppNavigator() {
   }
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {isFirstLaunch && (
-          <Stack.Screen
-            name="Onboarding"
-            component={(props) => (
-              <OnboardingScreen {...props} setIsFirstLaunch={setIsFirstLaunch} />
-            )}
-            options={{ gestureEnabled: false }}
-        />
-        )}
-        {!isFirstLaunch && !authStatus && (
-          <Stack.Screen name="AuthStack" component={AuthStack} />
-        )}
-        {!isFirstLaunch && authStatus && (
-          <>
-            <Stack.Screen name="MainTabs" component={MainTabs} />
-            <Stack.Screen name="ChatHistory" component={ChatHistoryScreen} options={{ headerShown: true, title: 'Lịch sử chat'}} />
-            <Stack.Screen name="Chat" component={ChatScreen} options={{ headerShown: true, title: 'Chatbot' }} />
-            <Stack.Screen name="CoachList" component={CoachListScreen} />
-            <Stack.Screen name="BookingScreen" component={BookingScreen}/>
-            <Stack.Screen name="MyMeetings" component={MyMeetingsScreen} />
-          </>
-        )}
-      </Stack.Navigator>
-    </NavigationContainer>
+    <TabBarProvider>
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          {isFirstLaunch && (
+            <Stack.Screen
+              name="Onboarding"
+              component={(props) => (
+                <OnboardingScreen {...props} setIsFirstLaunch={setIsFirstLaunch} />
+              )}
+              options={{ gestureEnabled: false }}
+            />
+          )}
+          {!isFirstLaunch && !authStatus && (
+            <Stack.Screen name="AuthStack" component={AuthStack} />
+          )}
+          {!isFirstLaunch && authStatus && (
+            <>
+              <Stack.Screen name="MainTabs" component={MainTabs} />
+              <Stack.Screen name="ChatHistory" component={ChatHistoryScreen}  />
+              <Stack.Screen name="Chat" component={ChatScreen}  />
+              <Stack.Screen name="CoachList" component={CoachListScreen} />
+              <Stack.Screen name="BookingScreen" component={BookingScreen}/>
+              <Stack.Screen name="MyMeetings" component={MyMeetingsScreen} />
+            </>
+          )}
+        </Stack.Navigator>
+      </NavigationContainer>
+    </TabBarProvider>
   );
 }

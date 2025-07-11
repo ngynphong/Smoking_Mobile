@@ -100,7 +100,7 @@ export default function RankingPreview() {
                     </View>
                 </View>
 
-                
+
 
                 {/* Third Place */}
                 <View className="items-center mx-2 flex-1">

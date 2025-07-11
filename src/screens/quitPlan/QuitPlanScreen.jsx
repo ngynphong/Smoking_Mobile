@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { View, Text, ActivityIndicator, ScrollView, SafeAreaView, TouchableOpacity, Alert, Image } from 'react-native';
 import { cloneQuitPlanPublic, getAllQuitPlanPublic } from '../../api/quitPlanApi';
 import { getStagebyPlanId } from '../../api/stageApi';
@@ -7,6 +7,7 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import Loading from '../../components/Loading';
 import { ChevronDown, ChevronUp } from 'lucide-react-native';
+import { TabBarContext } from '../../contexts/TabBarContext';
 
 const TaskItem = ({ task }) => (
   <View className="mb-2 p-3 bg-gray-100 rounded-md border border-gray-200">
@@ -43,7 +44,8 @@ const QuitPlanScreen = () => {
   const [error, setError] = useState(null);
   const navigation = useNavigation();
   const [expandedStages, setExpandedStages] = useState({});
-
+  const { setTabBarVisible } = useContext(TabBarContext);
+  const lastScrollY = useRef(0);
   useFocusEffect(
     React.useCallback(() => {
       const fetchPlanData = async () => {
@@ -109,8 +111,22 @@ const QuitPlanScreen = () => {
   }
 
   return (
-    <View className='flex-1 mb-14'>
-      <ScrollView className="flex-1 bg-gray-50 px-4 pt-4">
+    <View className='flex-1'>
+      <ScrollView 
+      className="flex-1 bg-gray-50 px-4 pt-4"
+        contentContainerStyle={{ paddingVertical: 16, paddingBottom: 80 }}
+        onScroll={(e) => {
+          const currentScrollY = e.nativeEvent.contentOffset.y;
+          if (currentScrollY > lastScrollY.current && currentScrollY > 0) {
+            setTabBarVisible(false);
+          } else {
+            setTabBarVisible(true);
+          }
+          lastScrollY.current = currentScrollY;
+        }}
+        scrollEventThrottle={16}
+        showsVerticalScrollIndicator={false}
+      >
         <Text className="text-2xl font-bold text-center p-6">Kế hoạch cai thuốc</Text>
         {plans.length === 0 ? (
           <View>
@@ -154,7 +170,7 @@ const QuitPlanScreen = () => {
       </ScrollView>
       <TouchableOpacity
         onPress={() => navigation.navigate('MyQuitPlan')}
-        className="absolute bottom-6 right-2 bg-blue-500 rounded-full px-3 py-2 flex-row items-center shadow-lg shadow-blue-400/40 active:opacity-80"
+        className="absolute bottom-20 right-2 bg-blue-500 rounded-full px-3 py-2 flex-row items-center shadow-lg shadow-blue-400/40 active:opacity-80"
         activeOpacity={0.85}
       >
         <Ionicons name="person-circle-outline" size={24} color="#fff" style={{ marginRight: 6 }} />

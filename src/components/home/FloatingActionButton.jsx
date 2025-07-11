@@ -10,8 +10,9 @@ export default function FloatingActionButton() {
     const handlePress = () => {
         if (user.membership.subscriptionType === 'premium') {
             navigation.navigate('ChatHistory')
+        } else {
+            Alert.alert('Bạn cần nâng cấp gói', 'Gói người dùng của bạn không đủ điều kiện')
         }
-        Alert.alert('Bạn cần nâng cấp gói', 'Gói người dùng của bạn không đủ điều kiện')
     };
 
     return (

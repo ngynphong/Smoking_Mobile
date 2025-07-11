@@ -1,5 +1,5 @@
 import { View, Text } from 'react-native'
-import React from 'react'
+import React, { useContext } from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import HomeScreen from '../screens/home/HomeScreen';
 import BadgeScreen from '../screens/badge/BadgeScreen';
@@ -23,6 +23,7 @@ import FeedbackScreen from '../screens/FeedbackScreen';
 import ChatScreen from '../screens/chat/ChatScreen';
 import MyMeetingsScreen from '../screens/meeting/MyMeetingsScreen';
 import NotificationScreen from '../screens/home/NotificationScreen';
+import { TabBarContext } from '../contexts/TabBarContext';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -81,6 +82,7 @@ function QuitPlanStackScreen() {
     )
 }
 export default function MainTabs() {
+    const { tabBarVisible } = useContext(TabBarContext);
     return (
         <Tab.Navigator
             screenOptions={({ route }) => ({
@@ -136,6 +138,7 @@ export default function MainTabs() {
                 tabBarInactiveTintColor: '#b0bec5',
                 headerShown: false,
                 tabBarStyle: {
+                    display: tabBarVisible ? 'flex' : 'none',
                     position: 'absolute',
                     left: 16,
                     right: 16,

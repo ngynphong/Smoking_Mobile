@@ -1,5 +1,5 @@
 import { View, Text, Image, TouchableOpacity, Alert, ActivityIndicator, ScrollView } from 'react-native';
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useRef } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -9,6 +9,7 @@ import { AuthContext } from '../../contexts/AuthContext';
 import { getProfile } from '../../api/userApi';
 import { getPostsByUserId } from '../../api/postApi';
 import { getBadgeUserId } from '../../api/badgeApi';
+import { TabBarContext } from '../../contexts/TabBarContext';
 
 export default function ProfileScreen() {
   const [userData, setUserData] = useState(null);
@@ -17,7 +18,8 @@ export default function ProfileScreen() {
   const [badgeCount, setBadgeCount] = useState(0);
   const { logout } = useContext(AuthContext);
   const navigation = useNavigation();
-
+  const { setTabBarVisible } = useContext(TabBarContext);
+  const lastScrollY = useRef(0);
   useFocusEffect(
     React.useCallback(() => {
       const fetchUserInfo = async () => {
@@ -41,6 +43,7 @@ export default function ProfileScreen() {
         }
       };
       fetchUserInfo();
+      setTabBarVisible(true);
     }, []));
 
   if (isLoading) {
@@ -167,7 +170,19 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView
+        onScroll={(e) => {
+          const currentScrollY = e.nativeEvent.contentOffset.y;
+          if (currentScrollY > lastScrollY.current && currentScrollY > 0) {
+            setTabBarVisible(false);
+          } else {
+            setTabBarVisible(true);
+          }
+          lastScrollY.current = currentScrollY;
+        }}
+        scrollEventThrottle={16}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Header with Gradient Background */}
         <LinearGradient
           colors={['#667eea', '#764ba2']}

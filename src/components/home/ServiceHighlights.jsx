@@ -11,24 +11,23 @@ const services = [
 export default function ServiceHighlights() {
     const navigation = useNavigation();
     return (
-        <View className="">
+        <View>
             {/* Section Title */}
-            <View className="flex-row items-center mb-5">
-                <MaterialCommunityIcons name="star-four-points" size={24} color="#FFD700" />
-                <Text className="text-2xl font-bold ml-2 text-gray-800">Dịch vụ hỗ trợ</Text>
+            <View className="flex-row items-center mb-4">
+                <MaterialCommunityIcons name="star-four-points-outline" size={24} className="text-accent" />
+                <Text className="text-xl font-bold ml-2 text-primary-dark">Dịch Vụ Hỗ Trợ</Text>
             </View>
 
             {/* Services Grid */}
-            <View className="flex-row justify-between flex-wrap">
+            <View className="flex-row justify-around">
                 {services.map((item, index) => (
                     <TouchableOpacity
                         key={index}
-                        className="w-[30%] items-center justify-center p-4 mb-4 bg-blue-50 rounded-xl shadow-sm border border-blue-100 active:bg-blue-100"
-                        style={{ aspectRatio: 1 }} // Ensures cards are square
+                        className="items-center justify-center p-4 space-y-2 bg-secondary rounded-2xl w-28 h-28"
                         onPress={() => item.label === "Tạo kế hoạch" ? navigation.navigate('CreateQuitPlanRequest') : navigation.navigate('MyMeetings')}
                     >
-                        <MaterialCommunityIcons name={item.icon} size={40} color="#4A90E2" />
-                        <Text className="text-center mt-2 text-gray-700 font-medium text-sm">
+                        <MaterialCommunityIcons name={item.icon} size={40} className="text-primary" />
+                        <Text className="text-center text-neutral-700 font-semibold text-sm">
                             {item.label}
                         </Text>
                     </TouchableOpacity>

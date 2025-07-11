@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../../contexts/AuthContext';
 import { getChatSessions } from '../../api/chatBotApi'; // This function needs to be created in chatBotApi.js
 import Icon from 'react-native-vector-icons/Ionicons';
+import { ArrowLeft } from 'lucide-react-native';
 
 const ChatHistoryScreen = () => {
   const { user } = useContext(AuthContext);
@@ -41,6 +42,11 @@ const ChatHistoryScreen = () => {
 
   return (
     <View className="flex-1 p-4 bg-gray-100">
+      <TouchableOpacity className='p-2 absolute top-8 left-2 z-20' onPress={() => navigation.goBack()}>
+        <ArrowLeft size={24} color="#374151" />
+      </TouchableOpacity>
+      <Text className="text-2xl font-bold text-center  p-6">Lịch sử đoạn chat</Text>
+
       <FlatList
         data={chatSessions}
         keyExtractor={(item) => item._id.toString()}

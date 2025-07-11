@@ -1,5 +1,5 @@
 import { View, Text, Image, TouchableOpacity, Alert, ActivityIndicator, ScrollView } from 'react-native';
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useRef } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -9,6 +9,7 @@ import { AuthContext } from '../../contexts/AuthContext';
 import { getProfile } from '../../api/userApi';
 import { getPostsByUserId } from '../../api/postApi';
 import { getBadgeUserId } from '../../api/badgeApi';
+import { TabBarContext } from '../../contexts/TabBarContext';
 
 export default function ProfileScreen() {
   const [userData, setUserData] = useState(null);
@@ -17,7 +18,8 @@ export default function ProfileScreen() {
   const [badgeCount, setBadgeCount] = useState(0);
   const { logout } = useContext(AuthContext);
   const navigation = useNavigation();
-
+  const { setTabBarVisible } = useContext(TabBarContext);
+  const lastScrollY = useRef(0);
   useFocusEffect(
     React.useCallback(() => {
       const fetchUserInfo = async () => {
@@ -41,6 +43,7 @@ export default function ProfileScreen() {
         }
       };
       fetchUserInfo();
+      setTabBarVisible(true);
     }, []));
 
   if (isLoading) {
@@ -115,19 +118,20 @@ export default function ProfileScreen() {
       onPress: () => navigation.navigate('QuitPlanRequest')
     },
     {
-      icon: 'settings-outline',
-      title: 'Cài đặt',
-      subtitle: 'Tùy chỉnh ứng dụng',
-      color: '#6B7280',
-      bgColor: '#F9FAFB'
+      icon: 'calendar-outline',
+      title: 'Đặt lịch với Coach',
+      subtitle: 'Tìm và đặt lịch hẹn với chuyên gia',
+      color: '#D946EF',
+      bgColor: '#FAE8FF',
+      onPress: () => navigation.navigate('CoachList')
     },
-
     {
-      icon: 'help-circle-outline',
-      title: 'Trợ giúp & Hỗ trợ',
-      subtitle: 'Liên hệ và câu hỏi thường gặp',
-      color: '#06B6D4',
-      bgColor: '#ECFEFF'
+      icon: 'list-outline',
+      title: 'Lịch hẹn của tôi',
+      subtitle: 'Xem các cuộc hẹn sắp tới và đã qua',
+      color: '#0EA5E9',
+      bgColor: '#E0F2FE',
+      onPress: () => navigation.navigate('MyMeetings')
     },
     {
       icon: 'log-out-outline',
@@ -166,7 +170,19 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView
+        onScroll={(e) => {
+          const currentScrollY = e.nativeEvent.contentOffset.y;
+          if (currentScrollY > lastScrollY.current && currentScrollY > 0) {
+            setTabBarVisible(false);
+          } else {
+            setTabBarVisible(true);
+          }
+          lastScrollY.current = currentScrollY;
+        }}
+        scrollEventThrottle={16}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Header with Gradient Background */}
         <LinearGradient
           colors={['#667eea', '#764ba2']}

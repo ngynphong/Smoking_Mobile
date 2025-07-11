@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import {
   View,
   Text,
@@ -15,6 +15,7 @@ import { getStagebyPlanId } from '../../api/stageApi';
 import { AuthContext } from '../../contexts/AuthContext';
 import { createProgress, getProgressByPlan, getProgressByStage, getProgressOneStage } from '../../api/progressApi';
 import { useFocusEffect } from '@react-navigation/native';
+import { TabBarContext } from '../../contexts/TabBarContext';
 
 const ProgressScreen = () => {
   const [quitPlans, setQuitPlans] = useState([]);
@@ -30,6 +31,8 @@ const ProgressScreen = () => {
   });
   const { user } = useContext(AuthContext)
   const [stageProgressPercents, setStageProgressPercents] = useState({});
+  const { setTabBarVisible } = useContext(TabBarContext);
+  const lastScrollY = useRef(0);
 
   const healthStatusOptions = [
     'Rất tốt - Không có triệu chứng',
@@ -82,7 +85,6 @@ const ProgressScreen = () => {
             progressesObj[stage._id] = [];
           }
         }
-        console.log(progressesObj)
         setProgresses(progressesObj);
       };
       if (stages.length > 0) fetchAllStageProgresses();
@@ -249,8 +251,21 @@ const ProgressScreen = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50 mb-14">
-      <ScrollView className="flex-1">
+    <SafeAreaView className="flex-1 bg-gray-50">
+      <ScrollView
+        className="flex-1"
+        onScroll={(e) => {
+          const currentScrollY = e.nativeEvent.contentOffset.y;
+          if (currentScrollY > lastScrollY.current && currentScrollY > 0) {
+            setTabBarVisible(false);
+          } else {
+            setTabBarVisible(true);
+          }
+          lastScrollY.current = currentScrollY;
+        }}
+        scrollEventThrottle={16}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Header */}
         <View className="bg-white p-6 shadow-sm">
           <Text className="text-2xl font-bold text-gray-800 mb-2">
@@ -340,9 +355,9 @@ const ProgressScreen = () => {
                           }`}
                         style={{ width: `${completion}%` }}
                       />
-                      
+
                     </View>
-                    
+
                   </View>
 
                   {/* Stats */}
@@ -481,7 +496,7 @@ const ProgressScreen = () => {
 
               <View className="flex-row space-x-3">
                 <TouchableOpacity
-                  className="flex-1 bg-gray-200 py-3 rounded-lg"
+                  className="flex-1 bg-gray-200 py-3 rounded-lg mr-2"
                   onPress={() => setShowProgressModal(false)}
                 >
                   <Text className="text-gray-700 text-center font-semibold">

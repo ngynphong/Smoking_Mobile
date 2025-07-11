@@ -1,13 +1,17 @@
 import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, SafeAreaView } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import PostCard from '../../components/community/PostCard';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext, useRef } from 'react';
 import { getPosts } from '../../api/postApi';
+import { TabBarContext } from '../../contexts/TabBarContext';
 
 const CommunityScreen = () => {
   const navigation = useNavigation();
   const [posts, setPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { setTabBarVisible } = useContext(TabBarContext);
+  const lastScrollY = useRef(0);
+
   useFocusEffect(
     React.useCallback(() => {
       const fetchPosts = async () => {
@@ -22,6 +26,9 @@ const CommunityScreen = () => {
         }
       };
       fetchPosts();
+      
+      // Ensure tab bar is visible when screen is focused
+      setTabBarVisible(true);
     }, [])
   );
 
@@ -61,14 +68,25 @@ const CommunityScreen = () => {
             </View>
           )}
           keyExtractor={(item, index) => item._id?.toString() || index.toString()}
-          contentContainerStyle={{ paddingVertical: 16 }}
+          contentContainerStyle={{ paddingVertical: 16, paddingBottom: 80 }}
           showsVerticalScrollIndicator={false}
+          onScroll={(e) => {
+            const currentScrollY = e.nativeEvent.contentOffset.y;
+            // Hide tab bar only if scrolling down and not at the top
+            if (currentScrollY > lastScrollY.current && currentScrollY > 0) {
+              setTabBarVisible(false);
+            } else {
+              setTabBarVisible(true);
+            }
+            lastScrollY.current = currentScrollY;
+          }}
+          scrollEventThrottle={16}
         />
       )}
 
       <TouchableOpacity
-        className="absolute bottom-6 right-6 bg-blue-600 w-14 h-14 rounded-full justify-center items-center shadow-lg"
-        onPress={() => navigation.navigate('CreatePost')} // Thêm navigation cho nút tạo post
+        className="absolute bottom-20 right-6 bg-blue-600 w-14 h-14 rounded-full justify-center items-center shadow-lg"
+        onPress={() => navigation.navigate('CreatePost')}
       >
         <Text className="text-white text-3xl">+</Text>
       </TouchableOpacity>

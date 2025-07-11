@@ -70,73 +70,73 @@ export default function LoginScreen() {
     };
 
     return (
-        <SafeAreaView className="flex-1 bg-white">
-            {/* Top curved background */}
-            <View className="h-[30%] bg-[#6c63ff] rounded-b-[50px] relative" />
-
-            <View className="w-[85%] absolute top-40 mx-auto right-9">
-                <Text className="text-4xl text-center font-bold mb-2 text-white">Đăng Nhập</Text>
-                <Text className="text-white text-center mb-8">Đăng nhập để tiếp tục</Text>
-
-                {/* Email Input */}
-                <Text className="text-gray-700 my-2 font-semibold">Địa chỉ Email</Text>
-                <View className="mb-4">
-                    <TextInput
-                        placeholder="Nhập email của bạn"
-                        value={email}
-                        onChangeText={setEmail}
-                        keyboardType="email-address"
-                        autoCapitalize="none"
-                        className="border border-gray-300 p-3 rounded-lg bg-gray-50"
-                    />
-                    {emailError ? <Text className="text-red-500 text-sm mt-1 italic">{emailError}</Text> : null}
+        <SafeAreaView className="flex-1 bg-neutral-200">
+            <View className="flex-1 justify-center items-center p-6">
+                {/* Header */}
+                <View className="w-full items-center mb-10">
+                    <Text className="text-4xl font-bold text-primary-dark">Đăng Nhập</Text>
+                    <Text className="text-neutral-600 mt-2">Chào mừng bạn đã quay trở lại!</Text>
                 </View>
 
-                {/* Password Input */}
-                <Text className="text-gray-700 mb-2 font-semibold">Mật khẩu</Text>
-                <View className="mb-2 relative">
-                    <TextInput
-                        placeholder="Nhập mật khẩu của bạn"
-                        value={password}
-                        onChangeText={setPassword}
-                        secureTextEntry={!showPassword}
-                        className="border border-gray-300 p-3 rounded-lg bg-gray-50"
-                    />
-                    <TouchableOpacity
-                        className="absolute right-3 top-3"
-                        onPress={() => setShowPassword(!showPassword)}
-                    >
-                        {showPassword ?
-                            <Ionicons name="eye-off" size={18} color="gray" /> :
-                            <Ionicons name="eye" size={18} color="gray" />
-                        }
+                {/* Form Container */}
+                <View className="w-full bg-neutral-100 p-6 rounded-2xl shadow-md">
+                    {/* Email Input */}
+                    <View className="mb-4">
+                        <Text className="text-neutral-700 mb-2 font-semibold">Địa chỉ Email</Text>
+                        <TextInput
+                            placeholder="Nhập email của bạn"
+                            value={email}
+                            onChangeText={setEmail}
+                            keyboardType="email-address"
+                            autoCapitalize="none"
+                            className="bg-neutral-200 p-4 rounded-xl border border-neutral-300 focus:border-primary"
+                        />
+                        {emailError ? <Text className="text-danger mt-1 italic">{emailError}</Text> : null}
+                    </View>
+
+                    {/* Password Input */}
+                    <View className="mb-4">
+                        <Text className="text-neutral-700 mb-2 font-semibold">Mật khẩu</Text>
+                        <View className="relative">
+                            <TextInput
+                                placeholder="Nhập mật khẩu của bạn"
+                                value={password}
+                                onChangeText={setPassword}
+                                secureTextEntry={!showPassword}
+                                className="bg-neutral-200 p-4 rounded-xl border border-neutral-300 focus:border-primary"
+                            />
+                            <TouchableOpacity
+                                className="absolute right-4 top-4"
+                                onPress={() => setShowPassword(!showPassword)}
+                            >
+                                <Ionicons name={showPassword ? "eye-off-outline" : "eye-outline"} size={24} color="#A9B4C2" />
+                            </TouchableOpacity>
+                        </View>
+                        {passwordError ? <Text className="text-danger mt-1 italic">{passwordError}</Text> : null}
+                    </View>
+
+                    {/* Forgot Password */}
+                    <TouchableOpacity className='mb-6 flex-row justify-end' onPress={() => navigation.navigate('ForgotPassword')}>
+                        <Text className="text-primary font-semibold">Quên mật khẩu?</Text>
                     </TouchableOpacity>
-                    {passwordError ? <Text className="text-red-500 text-sm mt-1 italic">{passwordError}</Text> : null}
+
+                    {/* Sign In Button */}
+                    <TouchableOpacity
+                        onPress={handleSubmit}
+                        className="bg-primary py-4 rounded-xl shadow-sm"
+                        disabled={isLoading}
+                    >
+                        <Text className="text-neutral-100 text-center font-bold text-lg">
+                            {isLoading ? 'Đang đăng nhập...' : 'Đăng Nhập'}
+                        </Text>
+                    </TouchableOpacity>
                 </View>
-
-                {/* Remember Me & Forgot Password */}
-
-                <TouchableOpacity className='mb-4 flex-row justify-end' onPress={() => navigation.navigate('ForgotPassword')}>
-                    <Text className="text-gray-600">Quên mật khẩu?</Text>
-                </TouchableOpacity>
-
-
-                {/* Sign In Button */}
-                <TouchableOpacity
-                    onPress={handleSubmit}
-                    className="bg-[#6c63ff] py-3 rounded-lg"
-                    disabled={isLoading}
-                >
-                    <Text className="text-white text-center font-bold text-lg">
-                        {isLoading ? 'Đang đăng nhập...' : 'Đăng Nhập'}
-                    </Text>
-                </TouchableOpacity>
 
                 {/* Sign Up Link */}
                 <View className="flex-row justify-center mt-8">
-                    <Text className="text-gray-600">Chưa có tài khoản? </Text>
+                    <Text className="text-neutral-600">Chưa có tài khoản? </Text>
                     <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-                        <Text className="text-[#6c63ff] font-bold">Đăng ký</Text>
+                        <Text className="text-primary font-bold">Đăng ký ngay</Text>
                     </TouchableOpacity>
                 </View>
             </View>

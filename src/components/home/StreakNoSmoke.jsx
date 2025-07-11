@@ -23,26 +23,10 @@ const StreakNoSmoke = () => {
         fetchStreak();
     }, [user]);
 
-    // Tạo mảng icon lửa
-    const fireIcons = [];
-    const displayCount = Math.min(streak, MAX_FIRE);
-    for (let i = 0; i < displayCount; i++) {
-        fireIcons.push(
-            <Text key={i} className="text-2xl md:text-3xl">{'🔥'}</Text>
-        );
-    }
-
     return (
-        <View className="items-center">
-            <View className="flex-row flex-wrap justify-center mb-2">
-               
-                {streak > MAX_FIRE && (
-                    <Text className="text-2xl font-bold text-orange-500 ml-1">+{streak - MAX_FIRE}</Text>
-                )}
-                {fireIcons}
-            </View>
-            <Text className="text-3xl font-bold text-orange-500">{streak}</Text>
-            <Text className="text-base text-gray-700 mt-1">Chuỗi ngày không hút thuốc</Text>
+        <View className="items-center justify-center space-y-1">
+            <Text className="text-4xl font-bold text-primary-dark">{streak} 🔥</Text>
+            <Text className="text-base text-neutral-600 font-semibold">Ngày không khói thuốc</Text>
         </View>
     );
 };

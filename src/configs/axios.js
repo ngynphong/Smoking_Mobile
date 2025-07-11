@@ -5,7 +5,7 @@ const API_URL = process.env.EXPO_PUBLIC_API_URL; // hoặc lấy từ biến mô
 
 const axiosInstance = axios.create({
     baseURL: API_URL,
-    timeout: 10000,
+    timeout: 40000,
 });
 
 // Add request interceptor to automatically add token

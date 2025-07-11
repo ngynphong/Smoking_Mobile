@@ -42,28 +42,35 @@ export default function ProgressSummary() {
 
     if (isLoading) {
         return (
-          <SafeAreaView className="flex-1 justify-center items-center bg-gradient-to-br from-purple-500 to-pink-500">
-            <View className="bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl">
-              <ActivityIndicator size="large" color="#8B5CF6" />
-              <Text className="mt-4 text-gray-700 font-medium">Đang tải...</Text>
+            <View className="flex-1 justify-center items-center h-24">
+                <ActivityIndicator size="small" color="#0062FF" />
             </View>
-          </SafeAreaView>
         );
-      }
+    }
 
     return (
-        <View className="">
-            <Text className="text-lg font-semibold text-green-800">🌿 Tiến trình cai thuốc</Text>
+        <View className="space-y-2">
+            <Text className="text-lg font-bold text-primary-dark">🌿 Tiến Trình Hiện Tại</Text>
             {error ? (
-                <Text className="text-red-500 mt-2">{error}</Text>
+                <Text className="text-danger mt-2">{error}</Text>
             ) : progress ? (
-                <>
-                    <Text>Tên kế hoạch: <Text className="font-bold">{progress.plan_name}</Text></Text>
-                    <Text className="mt-1">Giai đoạn đã hoàn thành: <Text className="font-bold">{progress.completed_stages} </Text></Text>
-                    <Text>Tiến trình: <Text className="font-bold">{progress.progress_percent}%</Text></Text>
-                </>
+                <View className="space-y-1">
+                    <Text className="text-neutral-700">
+                        Kế hoạch: <Text className="font-bold text-neutral-900">{progress.plan_name}</Text>
+                    </Text>
+                    <Text className="text-neutral-700">
+                        Giai đoạn: <Text className="font-bold text-neutral-900">{progress.completed_stages}</Text>
+                    </Text>
+                    <View className="w-full bg-neutral-300 rounded-full h-2.5 mt-2">
+                        <View 
+                            className="bg-primary h-2.5 rounded-full" 
+                            style={{ width: `${progress.progress_percent}%` }}
+                        />
+                    </View>
+                    <Text className="text-right font-semibold text-primary">{progress.progress_percent}%</Text>
+                </View>
             ) : (
-                <Text className="text-gray-500 mt-2">Chưa có dữ liệu tiến trình.</Text>
+                <Text className="text-neutral-500 mt-2">Chưa có dữ liệu tiến trình.</Text>
             )}
         </View>
     );

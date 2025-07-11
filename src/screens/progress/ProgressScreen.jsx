@@ -82,7 +82,6 @@ const ProgressScreen = () => {
             progressesObj[stage._id] = [];
           }
         }
-        console.log(progressesObj)
         setProgresses(progressesObj);
       };
       if (stages.length > 0) fetchAllStageProgresses();
@@ -481,7 +480,7 @@ const ProgressScreen = () => {
 
               <View className="flex-row space-x-3">
                 <TouchableOpacity
-                  className="flex-1 bg-gray-200 py-3 rounded-lg"
+                  className="flex-1 bg-gray-200 py-3 rounded-lg mr-2"
                   onPress={() => setShowProgressModal(false)}
                 >
                   <Text className="text-gray-700 text-center font-semibold">

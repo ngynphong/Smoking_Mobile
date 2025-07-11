@@ -30,7 +30,7 @@ const quotes = [
 export default function HomeScreen() {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-
+  const navigation = useNavigation();
   useFocusEffect(
     React.useCallback(() => {
       const fetchUserData = async () => {
@@ -78,7 +78,7 @@ export default function HomeScreen() {
             <Text className="text-xl font-bold text-gray-900">Nỗ lực hôm nay nhé {user.name}</Text>
           </View>
           <View className="flex-row items-center">
-            <TouchableOpacity className="mr-3">
+            <TouchableOpacity className="mr-3" onPress={() => navigation.navigate('Notifications')}>
               <Ionicons name="notifications-outline" size={24} color="#222" />
             </TouchableOpacity>
             <TouchableOpacity>

@@ -22,6 +22,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import FeedbackScreen from '../screens/FeedbackScreen';
 import ChatScreen from '../screens/chat/ChatScreen';
 import MyMeetingsScreen from '../screens/meeting/MyMeetingsScreen';
+import NotificationScreen from '../screens/home/NotificationScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -64,6 +65,7 @@ function HomeStackScreen() {
             <Stack.Screen name="Chat" component={ChatScreen} />
             <Stack.Screen name="CreateQuitPlanRequest" component={CreateQuitPlanRequest} />
             <Stack.Screen name="MyMeetings" component={MyMeetingsScreen} />
+            <Stack.Screen name="Notifications" component={NotificationScreen} />
         </Stack.Navigator>
     )
 };

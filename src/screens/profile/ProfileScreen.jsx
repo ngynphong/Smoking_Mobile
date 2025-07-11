@@ -131,21 +131,6 @@ export default function ProfileScreen() {
       onPress: () => navigation.navigate('MyMeetings')
     },
     {
-      icon: 'settings-outline',
-      title: 'Cài đặt',
-      subtitle: 'Tùy chỉnh ứng dụng',
-      color: '#6B7280',
-      bgColor: '#F9FAFB'
-    },
-
-    {
-      icon: 'help-circle-outline',
-      title: 'Trợ giúp & Hỗ trợ',
-      subtitle: 'Liên hệ và câu hỏi thường gặp',
-      color: '#06B6D4',
-      bgColor: '#ECFEFF'
-    },
-    {
       icon: 'log-out-outline',
       title: 'Đăng xuất',
       subtitle: 'Thoát khỏi tài khoản',

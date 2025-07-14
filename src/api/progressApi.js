@@ -27,3 +27,11 @@ export const getProgressOneStage = async (id) => {
 export const getProgressOnePlan = async (id) => {
     return await axios.get(`/progress/plan/${id}`)
 };
+
+export const getTotalMoneySaved = async (id) => {
+    return await axios.get(`/progress/plan/${id}/money-saved`);
+};
+
+export const deleteProgress = async (id) => {
+    return await axios.delete(`/progress/${id}`);
+}

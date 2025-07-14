@@ -32,12 +32,12 @@ export default function ForgotPasswordScreen() {
     };
 
     return (
-        <SafeAreaView className="flex-1 bg-white">
+        <SafeAreaView className="flex-1 bg-neutral-200">
             <TouchableOpacity onPress={() => navigation.goBack()} className="absolute top-14 left-4 z-10">
                 <Ionicons name="arrow-back" size={24} color="black" />
             </TouchableOpacity>
             <View className="flex-1 justify-center items-center p-5">
-                <Text className="text-3xl font-bold mb-4 text-center text-[#6c63ff]">Quên mật khẩu</Text>
+                <Text className="text-3xl font-bold mb-4 text-center text-primary-dark">Quên mật khẩu</Text>
                 <Text className="text-center text-gray-600 mb-8">Nhập email của bạn để nhận mã OTP và đặt lại mật khẩu.</Text>
 
                 <View className="w-full">
@@ -48,13 +48,13 @@ export default function ForgotPasswordScreen() {
                         onChangeText={setEmail}
                         keyboardType="email-address"
                         autoCapitalize="none"
-                        className="border border-gray-300 p-3 rounded-lg bg-gray-50 w-full"
+                        className="border border-gray-300 p-3 rounded-lg bg-neutral-200 w-full"
                     />
                 </View>
 
                 <TouchableOpacity
                     onPress={handleRequestOtp}
-                    className="bg-[#6c63ff] py-3 rounded-lg mt-8 w-full"
+                    className="bg-primary py-3 rounded-lg mt-8 w-full"
                     disabled={isLoading}
                 >
                     <Text className="text-white text-center font-bold text-lg">

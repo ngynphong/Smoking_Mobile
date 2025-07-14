@@ -18,16 +18,35 @@ export default function LoginScreen() {
 
     const handleLogin = async () => {
         setIsLoading(true);
+        setEmailError('');
+        setPasswordError('');
         try {
             const response = await login({ email, password });
-            console.log(response.data.user);
             if (response.status === 200) {
                 loginContext(response.data.user.token, response.data.user);
             } else {
-                Alert.alert('Đăng nhập thất bại', response.data.message || 'Sai thông tin');
+                // Nếu API trả về lỗi, hiển thị dưới trường email
+                setEmailError(response.data.message || 'Sai thông tin đăng nhập');
             }
         } catch (error) {
-            Alert.alert('Lỗi hệ thống', error.message);
+            // Lấy thông báo lỗi từ API nếu có
+            const apiMessage =
+                error?.response?.data?.message ||
+                error?.message ||
+                'Đăng nhập thất bại. Vui lòng kiểm tra lại email và mật khẩu.';
+            // Phân loại lỗi để hiển thị đúng trường
+            if (
+                apiMessage.toLowerCase().includes('email')
+            ) {
+                setEmailError(apiMessage);
+            } else if (
+                apiMessage.toLowerCase().includes('mật khẩu') ||
+                apiMessage.toLowerCase().includes('password')
+            ) {
+                setPasswordError(apiMessage);
+            } else {
+                setEmailError(apiMessage);
+            }
         } finally {
             setIsLoading(false);
         }
@@ -36,11 +55,11 @@ export default function LoginScreen() {
     const validateEmail = (email) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!email) {
-            setEmailError('Email is required');
+            setEmailError('Email bắt buộc');
             return false;
         }
         if (!emailRegex.test(email)) {
-            setEmailError('Invalid email format');
+            setEmailError('Định dạng email không hợp lệ');
             return false;
         }
 
@@ -49,11 +68,11 @@ export default function LoginScreen() {
     };
     const validatePassword = (password) => {
         if (!password) {
-            setPasswordError('Password is required');
+            setPasswordError('Mật khẩu bắt buộc');
             return false;
         }
         if (password.length < 6) {
-            setPasswordError('Password must be at least 6 characters');
+            setPasswordError('Mật khẩu phải có ít nhất 6 ký tự');
             return false;
         }
         setPasswordError('');

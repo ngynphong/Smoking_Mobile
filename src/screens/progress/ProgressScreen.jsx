@@ -9,11 +9,11 @@ import {
   Modal,
   SafeAreaView,
 } from 'react-native';
-import { Calendar, Target, Heart, Cigarette, TrendingDown, Plus, Edit3 } from 'lucide-react-native';
+import { Calendar, Target, Heart, Cigarette, TrendingDown, Plus, Edit3, TrashIcon } from 'lucide-react-native';
 import { getQuitplanByUserId } from '../../api/quitPlanApi';
 import { getStagebyPlanId } from '../../api/stageApi';
 import { AuthContext } from '../../contexts/AuthContext';
-import { createProgress, getProgressByPlan, getProgressByStage, getProgressOneStage } from '../../api/progressApi';
+import { createProgress, getProgressByPlan, getProgressByStage, getProgressOneStage, deleteProgress, updateProgress } from '../../api/progressApi';
 import { useFocusEffect } from '@react-navigation/native';
 import { TabBarContext } from '../../contexts/TabBarContext';
 
@@ -27,12 +27,14 @@ const ProgressScreen = () => {
   const [progressForm, setProgressForm] = useState({
     cigarettes_smoked: '',
     health_status: '',
-    date: new Date().toISOString().split('T')[0]
+    date: new Date().toLocaleDateString('vi-VN')
   });
   const { user } = useContext(AuthContext)
   const [stageProgressPercents, setStageProgressPercents] = useState({});
   const { setTabBarVisible } = useContext(TabBarContext);
   const lastScrollY = useRef(0);
+  const [modalMode, setModalMode] = useState('create'); // 'create' | 'edit'
+  const [selectedProgress, setSelectedProgress] = useState(null);
 
   const healthStatusOptions = [
     'Rất tốt - Không có triệu chứng',
@@ -180,39 +182,40 @@ const ProgressScreen = () => {
       return;
     }
 
-    const stageProgressArr = Array.isArray(progresses[currentStage._id]) ? progresses[currentStage._id] : [];
-    const existingProgress = stageProgressArr.find(
-      p => p.stage_id === currentStage._id && p.date === progressForm.date
-    );
+    try {
+      // Đảm bảo selectedProgress có tồn tại khi trong chế độ edit
+      if (!selectedProgress?._id) {
+        Alert.alert('Lỗi', 'Không tìm thấy tiến trình cần cập nhật');
+        return;
+      }
 
-    if (existingProgress) {
-      // Update existing progress
       const updatedProgress = {
-        stage_id: currentStage._id || currentStage.id,
+        stage_id: currentStage._id,
         date: progressForm.date,
         cigarettes_smoked: parseInt(progressForm.cigarettes_smoked),
         health_status: progressForm.health_status
       };
 
-      try {
-        const res = await updatedProgress(existingProgress._id, updatedProgress);
-        if (selectedPlan) {
-          const res = await getProgressByPlan(selectedPlan._id || selectedPlan.id);
-          setProgresses(res.data);
+      const res = await updateProgress(selectedProgress._id, updatedProgress);
+      // Cập nhật lại danh sách progress
+      const progressesObj = {};
+      for (const stage of stages) {
+        try {
+          const res = await getProgressByStage(stage._id);
+          progressesObj[stage._id] = res.data;
+        } catch (err) {
+          progressesObj[stage._id] = [];
         }
-        setShowProgressModal(false);
-        Alert.alert('Thành công', 'Đã cập nhật tiến trình!');
-      } catch (err) {
-        Alert.alert('Lỗi', 'Không thể cập nhật tiến trình');
       }
-    } else {
-      // Create new progress
-      await handleCreateProgress();
-      return;
-    }
+      setProgresses(progressesObj);
 
-    setShowProgressModal(false);
-    Alert.alert('Thành công', 'Đã cập nhật tiến trình!');
+      setShowProgressModal(false);
+      setModalMode('create');
+      setSelectedProgress(null);
+      Alert.alert('Thành công', 'Đã cập nhật tiến trình!');
+    } catch (err) {
+      Alert.alert('Lỗi', 'Không thể cập nhật tiến trình');
+    }
   };
 
   const openProgressModal = (stage) => {
@@ -227,7 +230,40 @@ const ProgressScreen = () => {
       health_status: existingProgress?.health_status || '',
       date: today
     });
+    // setModalMode('create');
     setShowProgressModal(true);
+  };
+
+  // const openEditProgressModal = (progress) => {
+  //   setSelectedProgress(progress);
+  //   setCurrentStage(stages.find(s => s._id === progress.stage_id));
+  //   setProgressForm({
+  //     cigarettes_smoked: progress.cigarettes_smoked.toString(),
+  //     health_status: progress.health_status,
+  //     date: new Date(progress.date).toISOString().split('T')[0]
+  //   });
+  //   setModalMode('edit');
+  //   setShowProgressModal(true);
+  // };
+
+  const handleDeleteProgress = async (progressId) => {
+    try {
+      await deleteProgress(progressId);
+      // Cập nhật lại danh sách progress
+      const progressesObj = {};
+      for (const stage of stages) {
+        try {
+          const res = await getProgressByStage(stage._id);
+          progressesObj[stage._id] = res.data;
+        } catch (err) {
+          progressesObj[stage._id] = [];
+        }
+      }
+      setProgresses(progressesObj);
+      Alert.alert('Thành công', 'Đã xóa tiến trình!');
+    } catch (error) {
+      Alert.alert('Lỗi', 'Không thể xóa tiến trình');
+    }
   };
 
   const getStatusColor = (status) => {
@@ -247,7 +283,16 @@ const ProgressScreen = () => {
   };
 
   const formatDate = (date) => {
-    return new Date(date).toLocaleDateString('vi-VN');
+    // Chuyển đổi ngày giờ về múi giờ UTC
+    const utcDate = new Date(date);
+    // Tạo options để format theo múi giờ Việt Nam
+    const options = {
+      timeZone: 'Asia/Ho_Chi_Minh',
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    };
+    return utcDate.toLocaleDateString('vi-VN', options);
   };
 
   return (
@@ -375,9 +420,43 @@ const ProgressScreen = () => {
                   {/* Latest Status */}
                   {latestProgress && (
                     <View className="mb-3 p-2 bg-gray-50 rounded">
-                      <Text className="text-xs text-gray-500 mb-1">
-                        Cập nhật cuối ({formatDate(latestProgress.date)}):
-                      </Text>
+                      <View className="flex-row justify-between items-center">
+                        <Text className="text-xs text-gray-500 mb-1">
+                          Cập nhật cuối ({formatDate(latestProgress.date)}):
+                        </Text>
+                        <View className="flex-row">
+                          <TouchableOpacity
+                            onPress={() => {
+                              setModalMode('edit');
+                              setSelectedProgress(latestProgress);
+                              setProgressForm({
+                                date: new Date(latestProgress.date).toISOString().split('T')[0],
+                                cigarettes_smoked: latestProgress.cigarettes_smoked.toString(),
+                                health_status: latestProgress.health_status
+                              });
+                              setCurrentStage(stage);
+                              setShowProgressModal(true);
+                            }}
+                            className="mr-2"
+                          >
+                            <Edit3 size={16} color="#3b82f6" />
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            onPress={() => {
+                              Alert.alert(
+                                'Xác nhận xóa',
+                                'Bạn có chắc muốn xóa tiến trình này?',
+                                [
+                                  { text: 'Hủy', style: 'cancel' },
+                                  { text: 'Xóa', style: 'destructive', onPress: () => handleDeleteProgress(latestProgress._id) },
+                                ]
+                              );
+                            }}
+                          >
+                            <TrashIcon size={16} color="#ef4444" />
+                          </TouchableOpacity>
+                        </View>
+                      </View>
                       <Text className="text-sm text-gray-700">
                         {latestProgress.cigarettes_smoked} điếu - {latestProgress.health_status}
                       </Text>
@@ -418,16 +497,24 @@ const ProgressScreen = () => {
           visible={showProgressModal}
           animationType="slide"
           transparent={true}
-          onRequestClose={() => setShowProgressModal(false)}
+          onRequestClose={() => {
+            setShowProgressModal(false);
+            setModalMode('create');
+            setSelectedProgress(null);
+          }}
         >
-          <View className="flex-1  bg-opacity-50 justify-end shadow-md">
+          <View className="flex-1 bg-opacity-50 justify-end shadow-md">
             <View className="bg-white rounded-t-3xl p-6">
               <View className="flex-row justify-between items-center mb-6">
                 <Text className="text-xl font-bold text-gray-800">
-                  Ghi nhận tiến trình
+                  {modalMode === 'create' ? 'Ghi nhận tiến trình' : 'Cập nhật tiến trình'}
                 </Text>
                 <TouchableOpacity
-                  onPress={() => setShowProgressModal(false)}
+                  onPress={() => {
+                    setShowProgressModal(false);
+                    setModalMode('create');
+                    setSelectedProgress(null);
+                  }}
                   className="p-2"
                 >
                   <Text className="text-gray-500 text-lg">✕</Text>
@@ -456,7 +543,7 @@ const ProgressScreen = () => {
                   className="border border-gray-300 rounded-lg p-3 text-gray-800"
                   value={progressForm.date}
                   onChangeText={(text) => setProgressForm(prev => ({ ...prev, date: text }))}
-                  placeholder="YYYY-MM-DD"
+                  placeholder="dd/mm/yyyy"
                 />
               </View>
 
@@ -497,7 +584,11 @@ const ProgressScreen = () => {
               <View className="flex-row space-x-3">
                 <TouchableOpacity
                   className="flex-1 bg-gray-200 py-3 rounded-lg mr-2"
-                  onPress={() => setShowProgressModal(false)}
+                  onPress={() => {
+                    setShowProgressModal(false);
+                    setModalMode('create');
+                    setSelectedProgress(null);
+                  }}
                 >
                   <Text className="text-gray-700 text-center font-semibold">
                     Hủy
@@ -506,10 +597,10 @@ const ProgressScreen = () => {
 
                 <TouchableOpacity
                   className="flex-1 bg-blue-500 py-3 rounded-lg"
-                  onPress={handleUpdateProgress}
+                  onPress={modalMode === 'create' ? handleCreateProgress : handleUpdateProgress}
                 >
                   <Text className="text-white text-center font-semibold">
-                    Lưu tiến trình
+                    {modalMode === 'create' ? 'Lưu tiến trình' : 'Cập nhật'}
                   </Text>
                 </TouchableOpacity>
               </View>

@@ -20,6 +20,14 @@ axiosInstance.interceptors.request.use(
     (error) => Promise.reject(error)
 );
 
+axiosInstance.interceptors.response.use(
+    response => response,
+    error => {
+        // Đừng show toast ở đây!
+        return Promise.reject(error);
+    }
+);
+
 export const setupAxiosInterceptors = (logout) => {
     axiosInstance.interceptors.response.use(
         (response) => response,

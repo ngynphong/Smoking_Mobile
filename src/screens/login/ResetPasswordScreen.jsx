@@ -40,12 +40,12 @@ export default function ResetPasswordScreen() {
     };
 
     return (
-        <SafeAreaView className="flex-1 bg-white">
+        <SafeAreaView className="flex-1 bg-neutral-200">
             <TouchableOpacity onPress={() => navigation.goBack()} className="absolute top-14 left-4 z-10">
                 <Ionicons name="arrow-back" size={24} color="black" />
             </TouchableOpacity>
             <View className="flex-1 justify-center items-center p-5">
-                <Text className="text-3xl font-bold mb-4 text-center text-[#6c63ff]">Đặt lại mật khẩu</Text>
+                <Text className="text-3xl font-bold mb-4 text-center text-primary-dark">Đặt lại mật khẩu</Text>
                 <Text className="text-center text-gray-600 mb-8">Nhập mật khẩu mới của bạn.</Text>
 
                 <View className="w-full mb-4 relative">
@@ -55,7 +55,7 @@ export default function ResetPasswordScreen() {
                         value={password}
                         onChangeText={setPassword}
                         secureTextEntry={!showPassword}
-                        className="border border-gray-300 p-3 rounded-lg bg-gray-50 w-full"
+                        className="border border-gray-300 p-3 rounded-lg bg-neutral-200 w-full"
                     />
                     <TouchableOpacity
                         className="absolute right-3 top-11"
@@ -75,7 +75,7 @@ export default function ResetPasswordScreen() {
                         value={confirmPassword}
                         onChangeText={setConfirmPassword}
                         secureTextEntry={!showPassword}
-                        className="border border-gray-300 p-3 rounded-lg bg-gray-50 w-full"
+                        className="border border-gray-300 p-3 rounded-lg bg-neutral-200 w-full"
                     />
                     <TouchableOpacity
                         className="absolute right-3 top-11"
@@ -90,7 +90,7 @@ export default function ResetPasswordScreen() {
 
                 <TouchableOpacity
                     onPress={handleResetPassword}
-                    className="bg-[#6c63ff] py-3 rounded-lg mt-8 w-full"
+                    className="bg-primary py-3 rounded-lg mt-8 w-full"
                     disabled={isLoading}
                 >
                     <Text className="text-white text-center font-bold text-lg">

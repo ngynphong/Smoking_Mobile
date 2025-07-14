@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { View, Text, ActivityIndicator, ScrollView, SafeAreaView, TouchableOpacity, Image } from 'react-native';
 import { getQuitplanByUserId } from '../../api/quitPlanApi';
 import { getUser } from '../../utils/authStorage';
@@ -8,6 +8,7 @@ import { ArrowLeft, ChevronDown, ChevronUp } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import StageItem from '../../components/quitPlan/StageItem';
 import Loading from '../../components/Loading';
+import { TabBarContext } from '../../contexts/TabBarContext';
 
 export default function MyQuitPlanScreen() {
   const [plans, setPlans] = useState([]);
@@ -18,6 +19,8 @@ export default function MyQuitPlanScreen() {
   const navigation = useNavigation();
   const [expandedStages, setExpandedStages] = useState({});
   const [completedTaskIds, setCompletedTaskIds] = useState([]);
+  const { setTabBarVisible } = useContext(TabBarContext);
+  const lastScrollY = useRef(0);
 
   useEffect(() => {
     const fetchPlanData = async () => {
@@ -102,7 +105,19 @@ export default function MyQuitPlanScreen() {
   }
 
   return (
-    <ScrollView className="flex-1 bg-gray-50 px-2 pt-4" contentContainerStyle={{ paddingBottom: 100 }}>
+    <ScrollView className="flex-1 bg-gray-50 px-2 pt-4"
+      contentContainerStyle={{ paddingVertical: 16, paddingBottom: 80 }}
+      showsVerticalScrollIndicator={false}
+      onScroll={(e) => {
+        const currentScrollY = e.nativeEvent.contentOffset.y;
+        // Hide tab bar only if scrolling down and not at the top
+        if (currentScrollY > lastScrollY.current && currentScrollY > 0) {
+          setTabBarVisible(false);
+        } else {
+          setTabBarVisible(true);
+        }
+        lastScrollY.current = currentScrollY;
+      }}>
       <TouchableOpacity className='p-2 absolute top-5 z-20' onPress={() => navigation.goBack()}>
         <ArrowLeft size={24} color="#374151" />
       </TouchableOpacity>

@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { View, Text, Image, FlatList, ActivityIndicator, Button, TouchableOpacity, Modal, TextInput } from 'react-native';
 import clsx from 'clsx';
 import { getBadgeUserId, shareBadge } from '../../api/badgeApi';
 import { getUser } from '../../utils/authStorage';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { TabBarContext } from '../../contexts/TabBarContext';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const BadgeCard = ({ badge, onShare }) => {
   const tierColor = {
@@ -70,6 +72,8 @@ const BadgeScreen = () => {
   const [shareContent, setShareContent] = useState('');
   const [selectedBadge, setSelectedBadge] = useState(null);
   const navigation = useNavigation()
+  const { setTabBarVisible } = useContext(TabBarContext);
+  const lastScrollY = useRef(0);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -119,7 +123,7 @@ const BadgeScreen = () => {
   }
 
   return (
-    <View className="flex-1 bg-white px-4 pt-6">
+    <SafeAreaView className="flex-1 bg-white px-4 pt-6">
       <TouchableOpacity
         onPress={() => navigation.goBack()}
         className='absolute top-7 left-6 z-10'
@@ -132,7 +136,19 @@ const BadgeScreen = () => {
         renderItem={({ item }) => <BadgeCard badge={item} onShare={handleShare} />}
         keyExtractor={(item) => item._id}
         numColumns={2}
-        contentContainerStyle={{ paddingBottom: 20 }}
+        contentContainerStyle={{ paddingVertical: 16, paddingBottom: 80 }}
+        showsVerticalScrollIndicator={false}
+        onScroll={(e) => {
+          const currentScrollY = e.nativeEvent.contentOffset.y;
+          // Hide tab bar only if scrolling down and not at the top
+          if (currentScrollY > lastScrollY.current && currentScrollY > 0) {
+            setTabBarVisible(false);
+          } else {
+            setTabBarVisible(true);
+          }
+          lastScrollY.current = currentScrollY;
+        }}
+        scrollEventThrottle={16}
       />
 
       <Modal
@@ -174,7 +190,7 @@ const BadgeScreen = () => {
           </View>
         </View>
       </Modal>
-    </View>
+    </SafeAreaView>
   );
 };
 

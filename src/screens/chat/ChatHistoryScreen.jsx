@@ -35,9 +35,13 @@ const ChatHistoryScreen = () => {
       onPress={() => navigation.navigate('Chat', { chatId: item._id })}
       className="bg-white p-4 my-2 rounded-lg shadow-md flex-row justify-between items-center"
     >
-      <Text className="text-lg">Đoạn chat vào {new Date(item.created_at).toLocaleDateString('vi-VN')}</Text>
-      <Icon name="chevron-forward-outline" size={20} color="#6b7280" />
+      <Text className="text-lg">{item.title}</Text>
+      <View className="flex-row items-center space-x-4">
+        <Text className="text-xs">{new Date(item.created_at).toLocaleDateString('vi-VN')}</Text>
+        <Icon name="chevron-forward-outline" size={20} color="#6b7280" />
+      </View>
     </TouchableOpacity>
+    
   );
 
   return (

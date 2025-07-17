@@ -6,4 +6,8 @@ export const getNotifications = async () => {
 
 export const getNotificationByUser = async (userId) => {
     return await axios.get(`/notifications/user/${userId}`);
-}
+};
+
+export const markNotificationsAsRead = async () => {
+    return await axios.put('/notifications/mark-read');
+};

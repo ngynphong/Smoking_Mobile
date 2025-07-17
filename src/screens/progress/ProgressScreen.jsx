@@ -27,7 +27,12 @@ const ProgressScreen = () => {
   const [progressForm, setProgressForm] = useState({
     cigarettes_smoked: '',
     health_status: '',
-    date: new Date().toLocaleDateString('vi-VN')
+    date: new Date().toISOString().split('T')[0], // Format: YYYY-MM-DD
+    time: new Date().toLocaleTimeString('vi-VN', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    }) // Format: HH:mm
   });
   const { user } = useContext(AuthContext)
   const [stageProgressPercents, setStageProgressPercents] = useState({});
@@ -124,13 +129,6 @@ const ProgressScreen = () => {
     return Math.min(stageProgressPercents[stage._id] || 0, 100);
   };
 
-  // const getAverageCigarettes = (stageId) => {
-  //   const stageProgresses = progresses.filter(p => p.stage_id === stageId);
-  //   if (stageProgresses.length === 0) return 0;
-  //   const total = stageProgresses.reduce((sum, p) => sum + p.cigarettes_smoked, 0);
-  //   return Math.round(total / stageProgresses.length);
-  // };
-
   const getLatestProgress = (stageId) => {
     const stageProgresses = Array.isArray(progresses[stageId]) ? progresses[stageId] : [];
     if (!stageProgresses.length) return undefined;
@@ -142,9 +140,14 @@ const ProgressScreen = () => {
       Alert.alert('Lỗi', 'Vui lòng nhập đầy đủ thông tin');
       return;
     }
+
+    const [hours, minutes] = progressForm.time.split(':');
+    const dateTime = new Date(progressForm.date);
+    dateTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+
     const newProgress = {
       stage_id: currentStage._id,
-      date: progressForm.date,
+      date: dateTime.toISOString(),
       cigarettes_smoked: parseInt(progressForm.cigarettes_smoked),
       health_status: progressForm.health_status,
       user_id: user.id
@@ -189,9 +192,13 @@ const ProgressScreen = () => {
         return;
       }
 
+      const [hours, minutes] = progressForm.time.split(':');
+      const dateTime = new Date(progressForm.date);
+      dateTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+
       const updatedProgress = {
         stage_id: currentStage._id,
-        date: progressForm.date,
+        date: dateTime.toISOString(),
         cigarettes_smoked: parseInt(progressForm.cigarettes_smoked),
         health_status: progressForm.health_status
       };
@@ -283,16 +290,15 @@ const ProgressScreen = () => {
   };
 
   const formatDate = (date) => {
-    // Chuyển đổi ngày giờ về múi giờ UTC
-    const utcDate = new Date(date);
-    // Tạo options để format theo múi giờ Việt Nam
-    const options = {
-      timeZone: 'Asia/Ho_Chi_Minh',
+    const d = new Date(date);
+    return d.toLocaleString('vi-VN', {
       day: '2-digit',
       month: '2-digit',
-      year: 'numeric'
-    };
-    return utcDate.toLocaleDateString('vi-VN', options);
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    });
   };
 
   return (
@@ -424,38 +430,46 @@ const ProgressScreen = () => {
                         <Text className="text-xs text-gray-500 mb-1">
                           Cập nhật cuối ({formatDate(latestProgress.date)}):
                         </Text>
-                        <View className="flex-row">
-                          <TouchableOpacity
-                            onPress={() => {
-                              setModalMode('edit');
-                              setSelectedProgress(latestProgress);
-                              setProgressForm({
-                                date: new Date(latestProgress.date).toISOString().split('T')[0],
-                                cigarettes_smoked: latestProgress.cigarettes_smoked.toString(),
-                                health_status: latestProgress.health_status
-                              });
-                              setCurrentStage(stage);
-                              setShowProgressModal(true);
-                            }}
-                            className="mr-2"
-                          >
-                            <Edit3 size={16} color="#3b82f6" />
-                          </TouchableOpacity>
-                          <TouchableOpacity
-                            onPress={() => {
-                              Alert.alert(
-                                'Xác nhận xóa',
-                                'Bạn có chắc muốn xóa tiến trình này?',
-                                [
-                                  { text: 'Hủy', style: 'cancel' },
-                                  { text: 'Xóa', style: 'destructive', onPress: () => handleDeleteProgress(latestProgress._id) },
-                                ]
-                              );
-                            }}
-                          >
-                            <TrashIcon size={16} color="#ef4444" />
-                          </TouchableOpacity>
-                        </View>
+                        {status !== 'completed' && (
+                          <View className="flex-row">
+                            <TouchableOpacity
+                              onPress={() => {
+                                setModalMode('edit');
+                                setSelectedProgress(latestProgress);
+                                const date = new Date(latestProgress.date);
+                                setProgressForm({
+                                  date: date.toISOString().split('T')[0],
+                                  time: date.toLocaleTimeString('vi-VN', {
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                    hour12: false
+                                  }),
+                                  cigarettes_smoked: latestProgress.cigarettes_smoked.toString(),
+                                  health_status: latestProgress.health_status
+                                });
+                                setCurrentStage(stage);
+                                setShowProgressModal(true);
+                              }}
+                              className="mr-2"
+                            >
+                              <Edit3 size={16} color="#3b82f6" />
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                              onPress={() => {
+                                Alert.alert(
+                                  'Xác nhận xóa',
+                                  'Bạn có chắc muốn xóa tiến trình này?',
+                                  [
+                                    { text: 'Hủy', style: 'cancel' },
+                                    { text: 'Xóa', style: 'destructive', onPress: () => handleDeleteProgress(latestProgress._id) },
+                                  ]
+                                );
+                              }}
+                            >
+                              <TrashIcon size={16} color="#ef4444" />
+                            </TouchableOpacity>
+                          </View>
+                        )}
                       </View>
                       <Text className="text-sm text-gray-700">
                         {latestProgress.cigarettes_smoked} điếu - {latestProgress.health_status}
@@ -474,7 +488,7 @@ const ProgressScreen = () => {
                     >
                       <Plus size={16} color="white" />
                       <Text className="text-white font-semibold ml-2">
-                        Ghi nhận hôm nay
+                        Ghi nhận tiến trình
                       </Text>
                     </TouchableOpacity>
                   )}
@@ -544,6 +558,17 @@ const ProgressScreen = () => {
                   value={progressForm.date}
                   onChangeText={(text) => setProgressForm(prev => ({ ...prev, date: text }))}
                   placeholder="dd/mm/yyyy"
+                />
+              </View>
+              <View className="mb-4">
+                <Text className="text-gray-700 font-medium mb-2">
+                  Thời gian
+                </Text>
+                <TextInput
+                  className="border border-gray-300 rounded-lg p-3 text-gray-800"
+                  value={progressForm.time}
+                  onChangeText={(text) => setProgressForm(prev => ({ ...prev, time: text }))}
+                  placeholder="HH:mm"
                 />
               </View>
 

@@ -12,6 +12,11 @@ export const getBadges = async () => {
     return await axios.get(`/user-badges`);
 }
 
-export const leaderBoard = async () => {
-    return await axios.get(`/badges/leaderboard`);
+/**
+ * Fetches the leaderboard data based on a specific type.
+ * @param {('points'|'no_smoke_days'|'money_saved'|'badge_count')} type - The type of leaderboard to fetch.
+ */
+export const leaderBoard = async (type = 'points') => {
+    // The endpoint uses 'leaderboard' for points and 'leaderboards' for others,
+    return await axios.get(`/badges/leaderboard?type=${type}`);
 }

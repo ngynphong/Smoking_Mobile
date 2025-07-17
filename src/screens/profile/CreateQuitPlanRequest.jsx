@@ -33,6 +33,19 @@ const CreateQuitPlanRequest = () => {
         if (!selectedCoachId || !form.name || !form.reason) {
             return Alert.alert('Thiếu thông tin', 'Vui lòng điền đầy đủ thông tin và chọn huấn luyện viên.');
         }
+
+        // Check if start date is in the past
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        if (form.start_date < today) {
+            return Alert.alert('Ngày không hợp lệ', 'Ngày bắt đầu không thể là ngày trong quá khứ.');
+        }
+
+        // Check if target date is before start date
+        if (form.target_quit_date < form.start_date) {
+            return Alert.alert('Ngày không hợp lệ', 'Ngày mục tiêu cai không thể sớm hơn ngày bắt đầu.');
+        }
+
         try {
             const payload = {
                 name: form.name,
@@ -49,12 +62,43 @@ const CreateQuitPlanRequest = () => {
         }
     };
 
+    // Add date validation handlers
+    const handleStartDateChange = (e, date) => {
+        setShowStartDatePicker(false);
+        if (date) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            if (date < today) {
+                Alert.alert('Ngày không hợp lệ', 'Không thể chọn ngày trong quá khứ.');
+                return;
+            }
+
+            handleChange('start_date', date);
+            // If target date is before new start date, update target date
+            if (form.target_quit_date < date) {
+                handleChange('target_quit_date', date);
+            }
+        }
+    };
+
+    const handleTargetDateChange = (e, date) => {
+        setShowTargetDatePicker(false);
+        if (date) {
+            if (date < form.start_date) {
+                Alert.alert('Ngày không hợp lệ', 'Ngày mục tiêu cai không thể sớm hơn ngày bắt đầu.');
+                return;
+            }
+            handleChange('target_quit_date', date);
+        }
+    };
+
     return (
         <ScrollView className="flex-1 bg-gray-50 px-4 py-6">
-            <TouchableOpacity className='p-2 absolute z-20 top-1' onPress={() => navigation.goBack()}>
+            {/* <TouchableOpacity className='p-2 absolute z-20 top-1' onPress={() => navigation.goBack()}>
                 <ArrowLeft size={24} color="#374151" />
-            </TouchableOpacity>
-            <Text className="text-2xl font-bold text-center text-gray-800 mb-4 mt-2">Gửi Yêu Cầu Tạo Kế Hoạch</Text>
+            </TouchableOpacity> */}
+            <Text className="text-2xl font-bold text-center text-gray-800 mb-4 mt-4">Gửi Yêu Cầu Tạo Kế Hoạch</Text>
 
             <Text className="text-sm text-gray-700 mb-1">Tên kế hoạch:</Text>
             <TextInput className="border rounded-lg border-gray-200 px-3 py-2 mb-4" placeholder="Nhập tên kế hoạch" value={form.name} onChangeText={(v) => handleChange('name', v)} />
@@ -70,10 +114,8 @@ const CreateQuitPlanRequest = () => {
                 <DateTimePicker
                     value={form.start_date}
                     mode="date"
-                    onChange={(e, date) => {
-                        setShowStartDatePicker(false);
-                        if (date) handleChange('start_date', date);
-                    }}
+                    minimumDate={new Date()}
+                    onChange={handleStartDateChange}
                 />
             )}
 
@@ -85,13 +127,11 @@ const CreateQuitPlanRequest = () => {
                 <DateTimePicker
                     value={form.target_quit_date}
                     mode="date"
-                    onChange={(e, date) => {
-                        setShowTargetDatePicker(false);
-                        if (date) handleChange('target_quit_date', date);
-                    }}
+                    minimumDate={form.start_date}
+                    onChange={handleTargetDateChange}
                 />
             )}
-
+            
             <Text className="text-lg font-semibold text-gray-800 mb-2">Chọn Huấn Luyện Viên:</Text>
             {coaches.map(coach => (
                 <CoachCard key={coach.coach_id._id} coach={coach} selected={coach.coach_id._id === selectedCoachId} onSelect={setSelectedCoachId} />

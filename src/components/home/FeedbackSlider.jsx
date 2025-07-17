@@ -37,7 +37,7 @@ export default function FeedbackSlider() {
                 keyExtractor={(item, index) => item._id?.toString() || index.toString()}
                 contentContainerStyle={{ paddingVertical: 16, paddingHorizontal: 8 }}
                 renderItem={({ item }) => (
-                    <View className="bg-white rounded-2xl shadow-md p-4 mx-2 w-64 items-center">
+                    <View className="bg-white rounded-2xl shadow-sm p-4 mx-2 w-64 items-center">
                         <Image
                             source={{ uri: item.user_id?.avatar_url || 'https://ui-avatars.com/api/?name=User' }}
                             className="w-14 h-14 rounded-full mb-2"

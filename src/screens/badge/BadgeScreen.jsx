@@ -123,13 +123,13 @@ const BadgeScreen = () => {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white px-4 pt-6">
-      <TouchableOpacity
+    <SafeAreaView className="flex-1 bg-white  pt-4">
+      {/* <TouchableOpacity
         onPress={() => navigation.goBack()}
-        className='absolute top-7 left-6 z-10'
+        className='absolute top-0 left-6'
       >
         <Ionicons name="arrow-back" size={24} color="black" />
-      </TouchableOpacity>
+      </TouchableOpacity> */}
       <Text className="text-2xl font-bold text-center mb-4">Huy hiệu của bạn</Text>
       <FlatList
         data={badges}

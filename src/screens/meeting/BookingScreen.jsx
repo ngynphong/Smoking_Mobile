@@ -57,9 +57,9 @@ const BookingScreen = () => {
     return (
         <SafeAreaView className="flex-1 bg-gray-100">
             <ScrollView contentContainerStyle={{ padding: 16 }}>
-                <TouchableOpacity className='p-2 absolute z-20 top-2 left-2' onPress={() => navigation.goBack()}>
+                {/* <TouchableOpacity className='p-2 absolute z-20 top-2 left-2' onPress={() => navigation.goBack()}>
                     <ArrowLeft size={24} color="#374151" />
-                </TouchableOpacity>
+                </TouchableOpacity> */}
                 <Text className="text-2xl font-bold text-center mb-6 text-gray-800">Đặt lịch hẹn</Text>
                 <Calendar
                     onDayPress={handleDayPress}
@@ -98,13 +98,13 @@ const BookingScreen = () => {
                 )}
 
                 <TextInput
-                    className="bg-white p-4 rounded-lg shadow-md mb-4 text-base mt-2"
+                    className="bg-white p-4 rounded-lg shadow-sm mb-4 text-base mt-2"
                     placeholder="Mục đích cuộc hẹn"
                     value={purpose}
                     onChangeText={setPurpose}
                 />
                 <TouchableOpacity
-                    className="bg-blue-500 p-4 rounded-lg shadow-md items-center"
+                    className="bg-blue-500 p-4 rounded-lg shadow-sm items-center"
                     onPress={handleBooking}
                 >
                     <Text className="text-white text-lg font-bold">Đặt lịch</Text>

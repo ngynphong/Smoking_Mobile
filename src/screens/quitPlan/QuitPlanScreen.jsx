@@ -17,7 +17,7 @@ const TaskItem = ({ task }) => (
 );
 
 const StageItem = ({ stage, tasks, expanded, onToggle }) => (
-  <View className="mb-6 p-6 bg-white rounded-xl shadow border border-gray-200">
+  <View className="mb-6 p-6 bg-white rounded-xl border border-gray-200">
     <TouchableOpacity className="mb-2 flex-row items-center justify-between" onPress={onToggle} activeOpacity={0.8}>
       <View>
         <Text className="text-lg font-bold text-blue-600">{stage.title}</Text>
@@ -113,7 +113,7 @@ const QuitPlanScreen = () => {
   return (
     <View className='flex-1'>
       <ScrollView 
-      className="flex-1 bg-gray-50 px-4 pt-4"
+      className="flex-1 bg-gray-50 px-2 pt-4"
         contentContainerStyle={{ paddingVertical: 16, paddingBottom: 80 }}
         onScroll={(e) => {
           const currentScrollY = e.nativeEvent.contentOffset.y;
@@ -137,7 +137,7 @@ const QuitPlanScreen = () => {
           </View>
         ) : (
           plans.map(plan => (
-            <View key={plan._id} className="mb-6 p-4 bg-white rounded-xl shadow border border-gray-100">
+            <View key={plan._id} className="mb-6 p-4 bg-white rounded-xl shadow-sm border border-gray-100">
               <View className='flex-row relative'>
                 <View className="p-2 rounded-xl">
                   <Text className="text-xl font-semibold text-gray-900 mb-1">{plan.name}</Text>
@@ -170,7 +170,7 @@ const QuitPlanScreen = () => {
       </ScrollView>
       <TouchableOpacity
         onPress={() => navigation.navigate('MyQuitPlan')}
-        className="absolute bottom-20 right-2 bg-blue-500 rounded-full px-3 py-2 flex-row items-center shadow-lg shadow-blue-400/40 active:opacity-80"
+        className="absolute bottom-24 right-2 bg-blue-500 rounded-full px-3 py-2 flex-row items-center shadow-lg shadow-blue-400/40 active:opacity-80"
         activeOpacity={0.85}
       >
         <Ionicons name="person-circle-outline" size={24} color="#fff" style={{ marginRight: 6 }} />

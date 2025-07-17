@@ -24,7 +24,7 @@ export default function ServiceHighlights() {
                     <TouchableOpacity
                         key={index}
                         className="items-center justify-center p-4 space-y-2 bg-secondary rounded-2xl w-28 h-28"
-                        onPress={() => item.label === "Tạo kế hoạch" ? navigation.navigate('CreateQuitPlanRequest') : navigation.navigate('MyMeetings')}
+                        onPress={() => item.label === "Tạo kế hoạch" ? navigation.navigate('CreateQuitPlanRequest') : (item.label === "Tư vấn online") ? navigation.navigate('MyMeetings') : ''}
                     >
                         <MaterialCommunityIcons name={item.icon} size={40} className="text-primary" />
                         <Text className="text-center text-neutral-700 font-semibold text-sm">

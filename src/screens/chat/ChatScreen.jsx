@@ -102,7 +102,7 @@ const ChatScreen = () => {
       style={{ flex: 1, backgroundColor: '#f0f4f8' }}
       keyboardVerticalOffset={90}
     >
-      <View className="flex-1 p-4">
+      <View className="flex-1 p-4 mt-4">
         <FlatList
           ref={flatListRef}
           data={messages}

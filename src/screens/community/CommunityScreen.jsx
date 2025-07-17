@@ -45,7 +45,7 @@ const CommunityScreen = () => {
 
   return (
     <SafeAreaView style={{ flex: 1 }} className="bg-white">
-      <View className="bg-blue-200 py-4">
+      <View className="py-4">
         <Text className="text-2xl font-bold text-center">Cộng đồng</Text>
       </View>
 

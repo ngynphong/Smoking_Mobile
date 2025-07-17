@@ -16,6 +16,7 @@ import SubscriptionPackages from '../../components/home/SubscriptionPackages';
 import StreakNoSmoke from '../../components/home/StreakNoSmoke';
 import FeedbackSlider from '../../components/home/FeedbackSlider';
 import FloatingActionButton from '../../components/home/FloatingActionButton';
+import { getNotificationByUser } from '../../api/notificationApi';
 
 const quotes = [
   "Nếu bạn muốn thành công, hãy làm những việc bạn không muốn làm.",
@@ -34,22 +35,30 @@ export default function HomeScreen() {
   const navigation = useNavigation();
   const { setTabBarVisible } = useContext(TabBarContext);
   const lastScrollY = useRef(0);
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
+
   useFocusEffect(
     React.useCallback(() => {
       setTabBarVisible(true);
-      const fetchUserData = async () => {
+      const fetchData = async () => {
         try {
           setIsLoading(true);
           const user = await getUser();
-          const userData = await getProfile(user.id);
+          const [userData, notifications] = await Promise.all([
+            getProfile(user.id),
+            getNotificationByUser(user.id)
+          ]);
           setUser(userData.data.user);
+          // Đếm số thông báo chưa đọc
+          const unread = notifications.data.filter(n => !n.is_read).length;
+          setUnreadNotifications(unread);
         } catch (error) {
-          console.error('Error fetching user data:', error);
+          console.error('Error fetching data:', error);
         } finally {
           setIsLoading(false);
         }
       };
-      fetchUserData();
+      fetchData();
       setTabBarVisible(true);
     }, [])
   );
@@ -91,9 +100,19 @@ export default function HomeScreen() {
             <Text className="text-2xl font-bold text-primary-dark">Chào, {user.name}!</Text>
             <Text className="text-neutral-600">Hãy tiếp tục nỗ lực nhé.</Text>
           </View>
-          <View className="flex-row items-center space-x-4">
-            <TouchableOpacity onPress={() => navigation.navigate('Notifications')}>
-              <Ionicons name="notifications-outline" size={28} color="#2C3642" />
+          <View className="flex-row items-center space-x-6">
+            <TouchableOpacity
+              onPress={() => navigation.navigate('Notifications')}
+              className="relative mx-2"
+            >
+              <Ionicons name="notifications-outline" size={26} color="#2C3642" />
+              {unreadNotifications > 0 && (
+                <View className="absolute -top-1 -right-1 bg-red-500 rounded-full min-w-[18px] h-[18px] items-center justify-center">
+                  <Text className="text-white text-xs font-bold">
+                    {unreadNotifications > 99 ? '99+' : unreadNotifications}
+                  </Text>
+                </View>
+              )}
             </TouchableOpacity>
             <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
               <Image

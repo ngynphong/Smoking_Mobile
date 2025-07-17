@@ -1,9 +1,11 @@
 import { View, Text, FlatList, ActivityIndicator } from 'react-native';
 import React, { useEffect, useState, useContext } from 'react';
-import { getNotificationByUser } from '../../api/notificationApi';
+import { getNotificationByUser, markNotificationsAsRead } from '../../api/notificationApi';
 import { AuthContext } from '../../contexts/AuthContext';
 import moment from 'moment';
 import { Feather } from '@expo/vector-icons';
+import Loading from '../../components/Loading';
+import { useFocusEffect } from '@react-navigation/native';
 
 const getNotificationStyle = (type) => {
     switch (type) {
@@ -33,42 +35,62 @@ export default function NotificationScreen() {
     const [loading, setLoading] = useState(true);
     const { user } = useContext(AuthContext);
 
-    useEffect(() => {
-        const fetchNotifications = async () => {
-            if (user && user._id) {
-                try {
-                    const response = await getNotificationByUser(user._id);
-                    setNotifications(response.data);
-                } catch (error) {
-                    console.error("Failed to fetch notifications:", error);
-                } finally {
-                    setLoading(false);
+    useFocusEffect(
+        React.useCallback(() => {
+            const fetchNotifications = async () => {
+                if (user && user.id) {
+                    try {
+                        const response = await getNotificationByUser(user.id);
+                        setNotifications(response.data);
+                    } catch (error) {
+                        console.error("Failed to fetch notifications:", error);
+                    } finally {
+                        setLoading(false);
+                    }
                 }
-            }
-        };
+            };
 
-        fetchNotifications();
-    }, [user]);
+            fetchNotifications();
+        }, [user])
+    );
+
+    useFocusEffect(
+        React.useCallback(() => {
+            const markAsRead = async () => {
+                if (user?.id && notifications.length > 0) {
+                    try {
+                        await markNotificationsAsRead(user.id);
+                    } catch (error) {
+                        console.error("Failed to mark notifications as read:", error);
+                    }
+                }
+            };
+            markAsRead();
+        }, [notifications, user])
+    );
 
     const renderItem = ({ item }) => {
         const { icon, color, iconColor } = getNotificationStyle(item.type);
         return (
-            <View className={`flex-row items-center p-4 rounded-lg mb-3 shadow-md ${color}`}>
+            <View
+                className={`flex-row items-center p-4 rounded-lg mb-3 shadow-md 
+            ${color} ${!item.is_read ? 'border-l-4 border-blue-500' : ''}`}
+            >
                 <Feather name={icon} size={24} className={iconColor} />
                 <View className="ml-4 flex-1">
-                    <Text className="text-base text-gray-800">{item.message}</Text>
-                    <Text className="text-xs text-gray-500 mt-1 text-right">{moment(item.createdAt).fromNow()}</Text>
+                    <Text className={`text-base ${!item.is_read ? 'font-bold' : ''} text-gray-800`}>
+                        {item.message}
+                    </Text>
+                    <Text className="text-xs text-gray-500 mt-1 text-right">
+                        {moment(item.createdAt).fromNow()}
+                    </Text>
                 </View>
             </View>
         );
     };
 
     if (loading) {
-        return (
-            <View className="flex-1 justify-center items-center bg-white">
-                <ActivityIndicator size="large" color="#00adef" />
-            </View>
-        );
+        return <Loading />;
     }
 
     return (

@@ -144,7 +144,7 @@ export default function MainTabs() {
                     right: 16,
                     bottom: 16,
                     borderRadius: 32,
-                    height: 50,
+                    height: 60,
                     backgroundColor: 'transparent',
                     borderTopWidth: 0,
                     elevation: 0,

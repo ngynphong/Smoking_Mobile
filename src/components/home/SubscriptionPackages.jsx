@@ -2,516 +2,227 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
     View,
     Text,
-    Dimensions,
     ScrollView,
     TouchableOpacity,
-    Animated,
-    StatusBar,
-    SafeAreaView,
     ActivityIndicator,
     Linking,
     Alert,
+    SafeAreaView,
+    StatusBar
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-
-const { width, height } = Dimensions.get('window');
+import clsx from 'clsx';
 
 import { getPackages } from '../../api/packageApi';
 import { createSubscription, createPaymentLink } from '../../api/paymentApi';
 import { getMyActiveSubscription } from '../../api/subscriptionApi';
+import Loading from '../Loading';
 
+// Component được tối ưu hóa cho giao diện sạch sẽ và hiện đại
 const SubscriptionPackages = () => {
-    const [currentPackage, setCurrentPackage] = useState(0);
     const [packages, setPackages] = useState([]);
     const [loading, setLoading] = useState(true);
     const [paymentLoading, setPaymentLoading] = useState(false);
-    const [activeSubscriptions, setActiveSubscriptions] = useState([]);
+    const [activeSubscriptionId, setActiveSubscriptionId] = useState(null);
     const [error, setError] = useState(null);
-    const fadeAnim = useRef(new Animated.Value(1)).current;
-    const scaleAnim = useRef(new Animated.Value(1)).current;
-    const scrollViewRef = useRef(null);
 
-    // Mapping function to transform API data to UI format
+    // Cấu hình UI mới cho các gói
+    const packageUIConfig = {
+        free: {
+            icon: "rocket-outline",
+            cardClass: "bg-slate-100 border-2 border-slate-200",
+            titleClass: "text-slate-800",
+            priceClass: "text-slate-800",
+            featureColor: "text-slate-600",
+            buttonClass: "bg-slate-800",
+            buttonTextClass: "text-white",
+        },
+        plus: {
+            icon: "sparkles-outline",
+            cardClass: "bg-indigo-600 border-2 border-indigo-700", // Gói nổi bật
+            titleClass: "text-white",
+            priceClass: "text-white",
+            featureColor: "text-indigo-200",
+            buttonClass: "bg-white",
+            buttonTextClass: "text-indigo-600",
+            popular: true,
+        },
+        premium: {
+            icon: "earth-outline",
+            cardClass: "bg-gray-900 border-2 border-gray-700",
+            titleClass: "text-white",
+            priceClass: "text-white",
+            featureColor: "text-gray-300",
+            buttonClass: "bg-amber-400",
+            buttonTextClass: "text-gray-900",
+        },
+    };
+
     const transformPackageData = (apiPackages) => {
-        const packageConfig = {
-            free: {
-                icon: "trending-up",
-                colors: ['#4ade80', '#3b82f6'],
-                bgColors: ['#f0fdf4', '#eff6ff'],
-                title: "Bắt đầu hành trình đến với cuộc sống không khói thuốc - Miễn phí!",
-                subtitle: "Theo dõi tiến trình của bạn và nhận hỗ trợ cơ bản.",
-                defaultFeatures: [
-                    "Theo dõi tiến trình cơ bản",
-                    "Trích dẫn động lực hàng ngày",
-                    "Bộ đếm không khói thuốc",
-                    "Bộ đếm thời gian thèm thuốc đơn giản"
-                ],
-                buttonText: "Bắt đầu miễn phí",
-                buttonColors: ['#10b981', '#3b82f6']
-            },
-            plus: {
-                icon: "chatbubble",
-                colors: ['#a855f7', '#ec4899'],
-                bgColors: ['#faf5ff', '#fdf2f8'],
-                title: "Mở khóa các chiến lược được cá nhân hóa và mẹo của chuyên gia",
-                subtitle: "Vượt qua cơn thèm thuốc bằng sự hỗ trợ được thiết kế riêng cho bạn.",
-                defaultFeatures: [
-                    "Các kế hoạch cai thuốc được cá nhân hóa",
-                    "Mẹo và hướng dẫn của huấn luyện viên",
-                    "Báo cáo tiến độ chi tiết",
-                    "Phân tích mô hình cơn thèm thuốc",
-                    "Nhận huy hiệu theo cột mốc"
-                ],
-                buttonText: "Nâng cấp lên Plus",
-                buttonColors: ['#9333ea', '#ec4899'],
-                popular: true
-            },
-            premium: {
-                icon: "people",
-                colors: ['#f97316', '#ef4444'],
-                bgColors: ['#fff7ed', '#fef2f2'],
-                title: "Nhận được sự hướng dẫn tận tình và hỗ trợ từ cộng đồng",
-                subtitle: "Đảm bảo thành công của bạn với những hiểu biết sâu sắc và cộng đồng hỗ trợ.",
-                defaultFeatures: [
-                    "Huấn luyện viên cá nhân tận tâm",
-                    "Phân tích và hiểu biết sâu sắc nâng cao",
-                    "Truy cập cộng đồng hỗ trợ",
-                    "Hỗ trợ chuyên gia 24/7",
-                    "Kế hoạch bữa ăn được cá nhân hóa",
-                    "Công cụ quản lý căng thẳng"
-                ],
-                buttonText: "Chuyển sang gói cao cấp",
-                buttonColors: ['#ea580c', '#dc2626']
-            }
-        };
+        return apiPackages.map((pkg) => {
+            const config = packageUIConfig[pkg.name] || packageUIConfig.free;
 
-        return apiPackages.map((pkg, index) => {
-            const config = packageConfig[pkg.name] || packageConfig.free;
-
-            // Determine period text
             let period;
-            if (pkg.duration_days === 0) {
-                period = "Mãi mãi";
-            } else if (pkg.duration_days === 30) {
-                period = "tháng";
-            } else if (pkg.duration_days === 365) {
-                period = "năm";
-            } else {
-                period = `${pkg.duration_days} ngày`;
-            }
+            if (pkg.duration_days === 0) period = "Vĩnh viễn";
+            else if (pkg.duration_days % 365 === 0) period = `/ năm`;
+            else if (pkg.duration_days % 30 === 0) period = `/ tháng`;
+            else period = `/${pkg.duration_days} ngày`;
 
             return {
-                id: index,
-                name: pkg.name === 'free' ? 'Miễn phí' :
-                    pkg.name === 'plus' ? 'Plus' :
-                        pkg.name === 'premium' ? 'Premium' : pkg.name,
-                price: pkg.price === 0 ? "0" : pkg.price.toLocaleString('vi-VN'),
-                period: period,
-                icon: config.icon,
-                colors: config.colors,
-                bgColors: config.bgColors,
-                title: config.title,
-                subtitle: pkg.description || config.subtitle,
-                features: pkg.features.length > 0 ? pkg.features : config.defaultFeatures,
-                buttonText: config.buttonText,
-                buttonColors: config.buttonColors,
-                popular: config.popular || false,
-                apiData: pkg // Store original API data for reference
+                ...config,
+                id: pkg._id,
+                name: pkg.name.charAt(0).toUpperCase() + pkg.name.slice(1),
+                price: pkg.price === 0 ? "Miễn phí" : pkg.price.toLocaleString('vi-VN') + '₫',
+                period: pkg.price === 0 ? "" : period,
+                subtitle: pkg.description,
+                features: pkg.features,
             };
         });
     };
-    
-    const handlePayment = async (pkg) => {
-        if (pkg.price === 0) {
-            Alert.alert("Thành công", "Bạn đã chọn gói miễn phí.");
-            return;
-        }
 
-        setPaymentLoading(true);
-        try {
-            // Step 1: Create a subscription
-            const subResponse = await createSubscription(pkg._id);
-            const subscriptionId = subResponse.data.subscription._id;
-
-            if (!subscriptionId) {
-                throw new Error("Không thể tạo gói đăng ký.");
-            }
-
-            // Step 2: Create a payment link
-            const paymentResponse = await createPaymentLink(subscriptionId);
-            const checkoutUrl = paymentResponse.data.checkoutUrl;
-            
-            if (checkoutUrl) {
-                // Step 3: Open the checkout URL
-                await Linking.openURL(checkoutUrl);
-            } else {
-                throw new Error("Không thể tạo liên kết thanh toán.");
-            }
-        } catch (error) {
-            console.error('Payment Error:', error.response ? error.response.data : error);
-            const errorMessage = error.response?.data?.message || error.message || "Đã xảy ra lỗi trong quá trình thanh toán.";
-            Alert.alert("Lỗi", errorMessage);
-        } finally {
-            setPaymentLoading(false);
-        }
-    };
-
-    const fetchPackages = async () => {
+    const fetchData = async () => {
         try {
             setLoading(true);
             setError(null);
 
-            // Fetch packages and active subscription in parallel
             const [packagesResponse, activeSubResponse] = await Promise.all([
                 getPackages(),
-                getMyActiveSubscription()
+                getMyActiveSubscription().catch(() => ({ data: null })) // Tránh lỗi nếu không có gói nào
             ]);
 
-            const packagesData = packagesResponse.data.packages;
-            if (packagesResponse.data) {
-                const transformedPackages = transformPackageData(packagesData);
-                setPackages(transformedPackages);
-                const popularIndex = transformedPackages.findIndex(pkg => pkg.popular);
-                setCurrentPackage(popularIndex !== -1 ? popularIndex : 0);
-            } else {
-                throw new Error(packagesResponse.data.message || 'Failed to fetch packages');
+            if (packagesResponse.data?.packages) {
+                const transformed = transformPackageData(packagesResponse.data.packages);
+                //sắp xếp gói free lên đầu
+                transformed.sort((a, b) => {
+                    if (a.name === "Free" && b.name !== "Free") return -1;
+                    if (a.name !== "Free" && b.name === "Free") return 1;
+                    return 0;
+                });
+                setPackages(transformed);
             }
 
-            if (activeSubResponse.data && Array.isArray(activeSubResponse.data)) {
-                setActiveSubscriptions(activeSubResponse.data);
+            if (activeSubResponse.data) {
+                setActiveSubscriptionId(activeSubResponse.data.package_id?._id);
             }
 
-        } catch (error) {
-            console.error('Error fetching data:', error);
-            // Don't set a generic error message if it's just that there's no active sub
-            if (error.response?.status !== 404) {
-                setError(error.message);
-            }
-            setPackages([]); // Fallback to empty array or show error state
+        } catch (err) {
+            console.error('Lỗi khi tải dữ liệu gói:', err);
+            setError("Không thể tải danh sách gói dịch vụ. Vui lòng thử lại.");
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchPackages();
+        fetchData();
     }, []);
 
-    useEffect(() => {
-        if (packages.length > 0) {
-            animateTransition();
+    const handlePayment = async (packageId, price) => {
+        if (price === "Miễn phí") {
+            Alert.alert("Thông báo", "Bạn đang sử dụng gói miễn phí.");
+            return;
         }
-    }, [currentPackage]);
 
-    const animateTransition = () => {
-        Animated.sequence([
-            Animated.parallel([
-                Animated.timing(fadeAnim, {
-                    toValue: 0.7,
-                    duration: 150,
-                    useNativeDriver: true,
-                }),
-                Animated.timing(scaleAnim, {
-                    toValue: 0.95,
-                    duration: 150,
-                    useNativeDriver: true,
-                }),
-            ]),
-            Animated.parallel([
-                Animated.timing(fadeAnim, {
-                    toValue: 1,
-                    duration: 150,
-                    useNativeDriver: true,
-                }),
-                Animated.timing(scaleAnim, {
-                    toValue: 1,
-                    duration: 150,
-                    useNativeDriver: true,
-                }),
-            ]),
-        ]).start();
-    };
+        setPaymentLoading(true);
+        try {
+            const subResponse = await createSubscription(packageId);
+            const subId = subResponse.data?.subscription?._id;
+            if (!subId) throw new Error("Không thể tạo gói đăng ký.");
 
-    const nextPackage = () => {
-        if (packages.length === 0) return;
-        const newIndex = (currentPackage + 1) % packages.length;
-        setCurrentPackage(newIndex);
-        scrollViewRef.current?.scrollTo({ x: newIndex * width, animated: true });
-    };
+            const paymentResponse = await createPaymentLink(subId);
+            const checkoutUrl = paymentResponse.data?.checkoutUrl;
 
-    const prevPackage = () => {
-        if (packages.length === 0) return;
-        const newIndex = (currentPackage - 1 + packages.length) % packages.length;
-        setCurrentPackage(newIndex);
-        scrollViewRef.current?.scrollTo({ x: newIndex * width, animated: true });
-    };
-
-    const onScroll = (event) => {
-        if (packages.length === 0) return;
-        const contentOffset = event.nativeEvent.contentOffset;
-        const viewSize = event.nativeEvent.layoutMeasurement;
-        const pageNum = Math.floor(contentOffset.x / viewSize.width);
-        if (pageNum !== currentPackage && pageNum >= 0 && pageNum < packages.length) {
-            setCurrentPackage(pageNum);
+            if (checkoutUrl) {
+                await Linking.openURL(checkoutUrl);
+            } else {
+                throw new Error("Không thể tạo liên kết thanh toán.");
+            }
+        } catch (error) {
+            const message = error.response?.data?.message || error.message || "Lỗi thanh toán.";
+            Alert.alert("Lỗi", message);
+        } finally {
+            setPaymentLoading(false);
         }
     };
-    const renderPackageCard = (pkg, index) => {
-        const isCurrentUserPackage = activeSubscriptions.some(sub => sub.package_id?._id === pkg.apiData?._id);
-        const buttonText = isCurrentUserPackage ? "Gói của bạn" : pkg.buttonText;
-        const isButtonDisabled = isCurrentUserPackage || paymentLoading;
+
+    const renderPackageCard = (pkg) => {
+        const isCurrentPackage = pkg.id === activeSubscriptionId;
+        const buttonText = isCurrentPackage ? "Gói Hiện Tại" : "Nâng Cấp";
+        const isButtonDisabled = isCurrentPackage || paymentLoading;
 
         return (
-            <View key={pkg.id} style={{ width }} className="px-10 my-4">
-                <LinearGradient
-                    colors={pkg.bgColors}
-                    className="rounded-2xl p-4 mx-1 shadow-lg relative overflow-hidden"
-                    style={{
-                        shadowColor: '#000',
-                        shadowOffset: { width: 0, height: 2 },
-                        shadowOpacity: 0.3,
-                        shadowRadius: 12,
-                        elevation: 4,
-                    }}
-                >
-                    {/* Popular Badge */}
-                    {pkg.popular && (
-                        <LinearGradient
-                            colors={['#fbbf24', '#f59e0b']}
-                            className="absolute top-3 right-3 flex-row items-center px-2 py-1 rounded-full z-10"
-                            start={{ x: 0, y: 0 }}
-                            end={{ x: 1, y: 0 }}
-                        >
-                            <Ionicons name="star" size={12} color="white" />
-                            <Text className="text-white text-xs font-semibold ml-1">Phổ biến</Text>
-                        </LinearGradient>
-                    )}
+            <View key={pkg.id} className={clsx("rounded-3xl p-6 m-4", pkg.cardClass)}>
+                {pkg.popular && (
+                    <View className="absolute top-4 right-4 bg-yellow-400 px-3 py-1 rounded-full">
+                        <Text className="text-yellow-900 font-bold text-xs">Phổ biến</Text>
+                    </View>
+                )}
 
-                    {/* Package Header */}
-                    <View className="items-center mb-4">
-                        <LinearGradient
-                            colors={pkg.colors}
-                            className="w-16 h-16 rounded-full items-center justify-center mb-3"
-                            style={{
-                                shadowColor: '#000',
-                                shadowOffset: { width: 0, height: 2 },
-                                shadowOpacity: 0.25,
-                                shadowRadius: 4,
-                                elevation: 4,
-                            }}
-                            start={{ x: 0, y: 0 }}
-                            end={{ x: 1, y: 1 }}
-                        >
-                            <Ionicons name={pkg.icon} size={28} color="white" />
-                        </LinearGradient>
+                <View className="flex-row items-center mb-4">
+                    <Ionicons name={pkg.icon} size={28} color={pkg.titleClass.includes('white') ? 'white' : '#1f2937'} />
+                    <Text className={clsx("text-2xl font-bold ml-3", pkg.titleClass)}>{pkg.name}</Text>
+                </View>
 
-                        <Text className="text-2xl font-bold text-slate-800 mb-1">{pkg.name}</Text>
+                <Text className={clsx("text-sm mb-4", pkg.featureColor)}>{pkg.subtitle}</Text>
 
-                        <View className="flex-row items-baseline justify-center">
-                            <Text className="text-3xl font-bold text-slate-800">{pkg.price}</Text>
-                            {pkg.period !== 'Mãi mãi' && (
-                                <Text className="text-slate-600 ml-1 text-sm">/{pkg.period}</Text>
-                            )}
+                <View className="flex-row items-baseline mb-6">
+                    <Text className={clsx("text-4xl font-extrabold", pkg.priceClass)}>{pkg.price}</Text>
+                    {pkg.period && <Text className={clsx("text-base font-medium ml-1", pkg.featureColor)}>{pkg.period}</Text>}
+                </View>
+
+                <View className="space-y-3 mb-8">
+                    {pkg.features.map((feature, index) => (
+                        <View key={index} className="flex-row items-start">
+                            <Ionicons name="checkmark-circle-outline" size={20} color={pkg.featureColor} className="mr-3 mt-0.5" />
+                            <Text className={clsx("text-base flex-1", pkg.featureColor)}>{feature}</Text>
                         </View>
-                    </View>
+                    ))}
+                </View>
 
-                    {/* Benefits Description */}
-                    <View className="items-center mb-4">
-                        <Text className="text-base font-semibold text-slate-800 text-center mb-1 leading-5">
-                            {pkg.title}
-                        </Text>
-                        <Text className="text-sm text-slate-600 text-center leading-4">
-                            {pkg.subtitle}
-                        </Text>
-                    </View>
-
-                    {/* Features List */}
-                    <View className="mb-5">
-                        {pkg.features.map((feature, featureIndex) => (
-                            <View key={featureIndex} className="flex-row items-center mb-2">
-                                <LinearGradient
-                                    colors={pkg.colors}
-                                    className="w-5 h-5 rounded-full items-center justify-center mr-2"
-                                    start={{ x: 0, y: 0 }}
-                                    end={{ x: 1, y: 1 }}
-                                >
-                                    <Ionicons name="checkmark" size={12} color="white" />
-                                </LinearGradient>
-                                <Text className="text-sm text-gray-700 font-medium flex-1">
-                                    {feature}
-                                </Text>
-                            </View>
-                        ))}
-                    </View>
-
-                    {/* Action Button */}
-                    <TouchableOpacity
-                        className="shadow-md"
-                        style={{
-                            shadowColor: '#000',
-                            shadowOffset: { width: 0, height: 2 },
-                            shadowOpacity: 0.25,
-                            shadowRadius: 4,
-                            elevation: 4,
-                        }}
-                        activeOpacity={0.8}
-                        onPress={() => handlePayment(pkg.apiData)}
-                        disabled={isButtonDisabled}
-                    >
-                        <LinearGradient
-                            colors={isCurrentUserPackage ? ['#9ca3af', '#6b7280'] : pkg.buttonColors}
-                            className="py-3 rounded-xl items-center justify-center flex-row"
-                            start={{ x: 0, y: 0 }}
-                            end={{ x: 1, y: 0 }}
-                        >
-                            {paymentLoading && currentPackage === index ? (
-                                <ActivityIndicator size="small" color="white" className="mr-2" />
-                            ) : (
-                                <Text className="text-white text-base font-bold">{buttonText}</Text>
-                            )}
-                        </LinearGradient>
-                    </TouchableOpacity>
-                </LinearGradient>
+                <TouchableOpacity
+                    onPress={() => handlePayment(pkg.id, pkg.price)}
+                    disabled={isButtonDisabled}
+                    className={clsx(
+                        "py-4 rounded-xl items-center justify-center mt-auto",
+                        pkg.buttonClass,
+                        isButtonDisabled && "opacity-60"
+                    )}
+                >
+                    {paymentLoading && !isCurrentPackage ? (
+                        <ActivityIndicator color={pkg.buttonTextClass.includes('white') ? 'white' : 'black'} />
+                    ) : (
+                        <Text className={clsx("text-base font-bold", pkg.buttonTextClass)}>{buttonText}</Text>
+                    )}
+                </TouchableOpacity>
             </View>
         );
     };
 
-    // Loading state
     if (loading) {
-        return (
-            <SafeAreaView className="flex-1 justify-center items-center">
-                <StatusBar barStyle="light-content" />
-                <ActivityIndicator size="large" color="#4ade80" />
-                <Text className="text-gray-600 mt-4">Đang tải gói dịch vụ...</Text>
-            </SafeAreaView>
-        );
+        return <Loading/>;
     }
 
-    // Error state
     if (error) {
         return (
-            <SafeAreaView className="flex-1 justify-center items-center px-4">
-                <StatusBar barStyle="light-content" />
-                <Ionicons name="alert-circle" size={48} color="#ef4444" />
-                <Text className="text-red-500 text-lg font-semibold mt-4 text-center">
-                    Không thể tải gói dịch vụ
-                </Text>
-                <Text className="text-gray-600 mt-2 text-center">{error}</Text>
-                <TouchableOpacity
-                    onPress={fetchPackages}
-                    className="mt-4 bg-blue-500 px-6 py-3 rounded-lg"
-                >
-                    <Text className="text-white font-semibold">Thử lại</Text>
-                </TouchableOpacity>
-            </SafeAreaView>
-        );
-    }
-
-    // No packages state
-    if (packages.length === 0) {
-        return (
-            <SafeAreaView className="flex-1 justify-center items-center px-4">
-                <StatusBar barStyle="light-content" />
-                <Ionicons name="package" size={48} color="#6b7280" />
-                <Text className="text-gray-500 text-lg font-semibold mt-4 text-center">
-                    Không có gói dịch vụ nào
-                </Text>
-                <TouchableOpacity
-                    onPress={fetchPackages}
-                    className="mt-4 bg-blue-500 px-6 py-3 rounded-lg"
-                >
-                    <Text className="text-white font-semibold">Tải lại</Text>
+            <SafeAreaView className="flex-1 justify-center items-center p-5">
+                <Text className="text-red-500 text-center">{error}</Text>
+                <TouchableOpacity onPress={fetchData} className="mt-4 bg-blue-500 px-4 py-2 rounded">
+                    <Text className="text-white">Thử lại</Text>
                 </TouchableOpacity>
             </SafeAreaView>
         );
     }
 
     return (
-        <SafeAreaView className="flex-1">
-            <StatusBar barStyle="light-content" />
-
-            {/* Header */}
-            <View className="items-center pt-6 pb-3">
-                <Text className="text-2xl font-bold text-black mb-1">Chọn Con Đường Của Bạn</Text>
-                <Text className="text-sm text-gray-600 italic">Mỗi chuyến đi bắt đầu bằng một bước chân.</Text>
+        <SafeAreaView className="flex-1 ">
+            <StatusBar barStyle="dark-content" />
+            <View className="p-5 items-center">
+                <Text className="text-3xl font-bold text-gray-800">Chọn Gói Của Bạn</Text>
+                <Text className="text-gray-500 mt-1">Nâng cấp để có trải nghiệm tốt nhất.</Text>
             </View>
-
-            {/* Package Indicators */}
-            <View className="flex-row justify-center items-center py-3">
-                {packages.map((_, index) => (
-                    <TouchableOpacity
-                        key={index}
-                        onPress={() => {
-                            setCurrentPackage(index);
-                            scrollViewRef.current?.scrollTo({ x: index * width, animated: true });
-                        }}
-                        className={`w-3 h-3 rounded-full mx-1 ${index === currentPackage
-                            ? 'bg-white transform scale-110'
-                            : 'bg-white/30'
-                            }`}
-                    />
-                ))}
-            </View>
-
-            {/* Main Content */}
-            <Animated.View
-                className="flex-1 relative"
-                style={{
-                    opacity: fadeAnim,
-                    transform: [{ scale: scaleAnim }]
-                }}
-            >
-                <ScrollView
-                    ref={scrollViewRef}
-                    horizontal
-                    pagingEnabled
-                    showsHorizontalScrollIndicator={false}
-                    onScroll={onScroll}
-                    scrollEventThrottle={16}
-                    className="flex-1"
-                >
-                    {packages.map((pkg, index) => renderPackageCard(pkg, index))}
-                </ScrollView>
-
-                {/* Navigation Arrows */}
-                <TouchableOpacity
-                    onPress={prevPackage}
-                    className="absolute left-1 w-10 h-10 rounded-full bg-white/20 items-center justify-center"
-                    style={{
-                        top: '50%',
-                        transform: [{ translateY: -20 }],
-                        backdropFilter: 'blur(10px)'
-                    }}
-                    activeOpacity={0.7}
-                >
-                    <Ionicons name="chevron-back" size={20} color="white" />
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                    onPress={nextPackage}
-                    className="absolute right-1 w-10 h-10 rounded-full bg-white/20 items-center justify-center"
-                    style={{
-                        top: '50%',
-                        transform: [{ translateY: -20 }],
-                        backdropFilter: 'blur(10px)'
-                    }}
-                    activeOpacity={0.7}
-                >
-                    <Ionicons name="chevron-forward" size={20} color="white" />
-                </TouchableOpacity>
-            </Animated.View>
-
-            {/* Bottom Section */}
-            <View className="items-center py-4 px-4">
-                <Text className="text-gray-700 text-xs mb-3 text-center">
-                    Tham gia cùng hàng ngàn người đã cai thuốc lá thành công
-                </Text>
-                <View className="flex-row flex-wrap justify-center">
-                    <Text className="text-slate-400 text-xs mx-1">• Hủy bất cứ lúc nào</Text>
-                    <Text className="text-slate-400 text-xs mx-1">• Không có phí ẩn</Text>
-                    <Text className="text-slate-400 text-xs mx-1">• Dùng thử miễn phí 7 ngày</Text>
-                </View>
-            </View>
+            <ScrollView showsVerticalScrollIndicator={false}>
+                {packages.map(pkg => renderPackageCard(pkg))}
+            </ScrollView>
         </SafeAreaView>
     );
 };

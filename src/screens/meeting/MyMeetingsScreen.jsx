@@ -46,7 +46,7 @@ const MyMeetingsScreen = () => {
     };
 
     const renderMeeting = ({ item }) => (
-        <View className="bg-white p-4 rounded-lg shadow-md mb-4">
+        <View className="bg-white p-4 rounded-lg shadow-sm mb-4">
             <Text className="text-lg font-bold text-gray-800">Coach: {item.coach_id.name}</Text>
             <Text className="text-base text-gray-600">Mục đích: {item.purpose}</Text>
             <Text className="text-base text-gray-600">Ngày: {moment(item.schedule_at).format('HH:mm DD/MM/YYYY')}</Text>
@@ -64,9 +64,9 @@ const MyMeetingsScreen = () => {
     return (
         <SafeAreaView className="flex-1 bg-gray-100">
             <View className="p-4">
-                <TouchableOpacity className='p-2 absolute z-20 top-2 left-2' onPress={() => navigation.goBack()}>
+                {/* <TouchableOpacity className='p-2 absolute z-20 top-2 left-2' onPress={() => navigation.goBack()}>
                     <ArrowLeft size={24} color="#374151" />
-                </TouchableOpacity>
+                </TouchableOpacity> */}
                 <Text className="text-2xl font-bold text-center mb-6 text-gray-800">Các buổi hẹn của tôi</Text>
                 <FlatList
                     data={meetings}

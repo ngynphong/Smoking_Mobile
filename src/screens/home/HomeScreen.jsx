@@ -95,7 +95,7 @@ export default function HomeScreen() {
         scrollEventThrottle={16}
       >
         {/* Header */}
-        <View className="flex-row items-center justify-between pt-6 pb-4 px-4">
+        <View className="flex-row items-center justify-between pt-10 pb-4 px-4">
           <View>
             <Text className="text-2xl font-bold text-primary-dark">Chào, {user.name}!</Text>
             <Text className="text-neutral-600">Hãy tiếp tục nỗ lực nhé.</Text>
@@ -126,16 +126,16 @@ export default function HomeScreen() {
         {/* Main Content */}
         <View className="space-y-6 px-4">
           {/* Hero Banner */}
-          <View className="rounded-2xl shadow-md overflow-hidden">
+          <View className="rounded-2xl shadow-sm overflow-hidden">
             <HeroBanner />
           </View>
 
           {/* Streak & Progress */}
           <View className="flex-row space-x-4 gap-2 my-2">
-            <View className="flex-1 bg-neutral-100 rounded-2xl shadow-md p-4 items-center justify-center">
+            <View className="flex-1 bg-neutral-100 rounded-2xl shadow-sm p-4 items-center justify-center">
               <StreakNoSmoke />
             </View>
-            <View className="flex-1 bg-secondary rounded-2xl shadow-md p-4">
+            <View className="flex-1 bg-secondary rounded-2xl shadow-sm p-4">
               <ProgressSummary />
             </View>
           </View>
@@ -146,17 +146,17 @@ export default function HomeScreen() {
           </View>
 
           {/* Service Highlights */}
-          <View className="bg-neutral-100 rounded-2xl shadow-md mb-2 p-4">
+          <View className="bg-neutral-100 rounded-2xl shadow-sm mb-2 p-4">
             <ServiceHighlights />
           </View>
 
           {/* Ranking Preview */}
-          <View className="bg-neutral-100 rounded-2xl shadow-md mb-2 p-4">
+          <View className="bg-gray-50 rounded-2xl shadow-sm mb-2 p-4">
             <RankingPreview />
           </View>
 
           {/* Blog Preview */}
-          <View className="bg-neutral-100 rounded-2xl shadow-md p-4">
+          <View className="bg-neutral-100 rounded-2xl shadow-sm p-4">
             <BlogPreviewList />
           </View>
 

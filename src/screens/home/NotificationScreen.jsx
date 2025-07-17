@@ -73,7 +73,7 @@ export default function NotificationScreen() {
         const { icon, color, iconColor } = getNotificationStyle(item.type);
         return (
             <View
-                className={`flex-row items-center p-4 rounded-lg mb-3 shadow-md 
+                className={`flex-row items-center p-4 rounded-lg my-3 shadow-sm 
             ${color} ${!item.is_read ? 'border-l-4 border-blue-500' : ''}`}
             >
                 <Feather name={icon} size={24} className={iconColor} />
@@ -94,8 +94,8 @@ export default function NotificationScreen() {
     }
 
     return (
-        <View className="flex-1 bg-white pt-5">
-            <Text className="text-2xl font-bold text-center mb-5">Notifications</Text>
+        <View className="flex-1 bg-white mt-5">
+            <Text className="text-2xl font-bold text-center my-5">Notifications</Text>
             <FlatList
                 data={notifications}
                 renderItem={renderItem}

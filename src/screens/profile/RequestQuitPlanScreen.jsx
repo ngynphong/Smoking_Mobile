@@ -83,7 +83,7 @@ const RequestQuitPlanScreen = () => {
             </View>
 
             {requests.length === 0 ? (
-                <Text className="text-gray-600">Bạn chưa gửi yêu cầu nào.</Text>
+                <Text className="text-gray-600 text-center">Bạn chưa gửi yêu cầu nào.</Text>
             ) : (
                 requests.map(req => (
                     <RequestItem key={req._id} request={req} onDelete={handleDelete} />

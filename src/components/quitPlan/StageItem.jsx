@@ -4,7 +4,7 @@ import { ChevronDown, ChevronUp } from "lucide-react-native";
 
 export default function StageItem({ stage, tasks, expanded, onToggle, onCompleteTask }) {
     return (
-        <View className="mb-6 p-6 bg-white rounded-xl shadow border border-gray-200">
+        <View className="mb-6 p-6 bg-white rounded-xl border border-gray-200">
             <TouchableOpacity className="mb-2 flex-row items-center justify-between" onPress={onToggle} activeOpacity={0.8}>
                 <View>
                     <Text className="text-lg font-bold text-blue-600">{stage.title}</Text>

@@ -90,7 +90,7 @@ export default function RankingPreview() {
     };
 
     const renderLeaderboardItem = (player, index) => (
-        <View key={player._id} className="flex-row items-center bg-white p-2 rounded-xl mb-2 shadow-sm">
+        <View key={player._id} className="flex-row items-center bg-white p-2 rounded-xl mb-2  border border-gray-200">
             <Text className="text-lg font-bold text-gray-500 w-8">{index + 1}</Text>
             <Image source={{ uri: player.avatar }} className="w-10 h-10 rounded-full mr-3" />
             <Text className="flex-1 text-base font-medium text-gray-800" numberOfLines={1}>{player.name}</Text>

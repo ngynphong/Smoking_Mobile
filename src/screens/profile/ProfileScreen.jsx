@@ -195,7 +195,7 @@ export default function ProfileScreen() {
           <View className="absolute bottom-0 left-0 w-20 h-20 bg-white/10 rounded-full -ml-10 -mb-10" />
 
           {/* Profile Info */}
-          <View className="flex-row items-center mt-4">
+          <View className="flex-row items-center my-4 mx-2">
             <View className="relative">
               <Image
                 source={{
@@ -229,7 +229,7 @@ export default function ProfileScreen() {
         </LinearGradient>
 
         {/* Stats Cards */}
-        <View className="px-6 -mt-8 mb-6">
+        <View className="px-6 mt-4 mb-4">
           <View className="bg-white rounded-2xl shadow-lg p-4">
             <View className="flex-row justify-around">
               <View className="items-center">

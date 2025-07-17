@@ -118,9 +118,9 @@ export default function MyQuitPlanScreen() {
         }
         lastScrollY.current = currentScrollY;
       }}>
-      <TouchableOpacity className='p-2 absolute top-5 z-20' onPress={() => navigation.goBack()}>
+      {/* <TouchableOpacity className='p-2 absolute top-5 z-20' onPress={() => navigation.goBack()}>
         <ArrowLeft size={24} color="#374151" />
-      </TouchableOpacity>
+      </TouchableOpacity> */}
       <Text className="text-2xl font-bold text-center  p-6">Kế hoạch cai thuốc của tôi</Text>
 
       {plans.length === 0 ? (

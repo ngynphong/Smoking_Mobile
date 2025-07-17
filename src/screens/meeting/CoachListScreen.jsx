@@ -14,7 +14,6 @@ const CoachListScreen = () => {
             try {
                 const response = await getAllCoaches();
                 setCoaches(response.data);
-                console.log(coaches)
             } catch (error) {
                 console.error('Error fetching coaches:', error);
             }
@@ -25,7 +24,7 @@ const CoachListScreen = () => {
 
     const renderCoach = ({ item }) => (
         <TouchableOpacity
-            className="bg-white p-4 rounded-lg shadow-md mb-4 flex-row items-center"
+            className="bg-white p-4 rounded-lg shadow-sm mb-4 flex-row items-center"
             onPress={() => navigation.navigate('BookingScreen', { coachId: item.coach_id._id })}
         >
             <Image
@@ -42,9 +41,9 @@ const CoachListScreen = () => {
     return (
         <SafeAreaView className="flex-1 bg-gray-100">
             <View className="p-4">
-                <TouchableOpacity className='p-2 absolute z-20 top-2 left-2' onPress={() => navigation.goBack()}>
+                {/* <TouchableOpacity className='p-2 absolute z-20 top-2 left-2' onPress={() => navigation.goBack()}>
                     <ArrowLeft size={24} color="#374151" />
-                </TouchableOpacity>
+                </TouchableOpacity> */}
                 <Text className="text-2xl font-bold text-center mb-6 text-gray-800">Chọn một Coach</Text>
                 <FlatList
                     data={coaches}

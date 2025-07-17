@@ -86,10 +86,10 @@ const SmokingStatusScreen = () => {
 
     return (
         <ScrollView className="flex-1 bg-gray-50 px-4 py-6">
-            <TouchableOpacity className='p-2 absolute z-20 top-2' onPress={() => navigation.goBack()}>
+            {/* <TouchableOpacity className='p-2 absolute z-20 top-2' onPress={() => navigation.goBack()}>
                 <ArrowLeft size={24} color="#374151" />
-            </TouchableOpacity>
-            <Text className="text-2xl mt-2 font-bold text-center mb-6 text-gray-800">Tình Trạng Hút Thuốc</Text>
+            </TouchableOpacity> */}
+            <Text className="text-2xl mt-4 font-bold text-center mb-6 text-gray-800">Tình Trạng Hút Thuốc</Text>
 
             {status ? (
                 <View className="bg-white p-6 rounded-xl shadow">

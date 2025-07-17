@@ -33,7 +33,7 @@ const ChatHistoryScreen = () => {
   const renderItem = ({ item }) => (
     <TouchableOpacity
       onPress={() => navigation.navigate('Chat', { chatId: item._id })}
-      className="bg-white p-4 my-2 rounded-lg shadow-md flex-row justify-between items-center"
+      className="bg-white p-4 my-2 rounded-lg flex-row justify-between items-center"
     >
       <Text className="text-lg">{item.title}</Text>
       <View className="flex-row items-center space-x-4">
@@ -58,7 +58,7 @@ const ChatHistoryScreen = () => {
         ListHeaderComponent={
           <TouchableOpacity
             onPress={handleNewChat}
-            className="bg-blue-400 p-4 my-2 rounded-xl shadow-md flex-row justify-center items-center"
+            className="bg-blue-400 p-4 my-2 rounded-xl flex-row justify-center items-center"
           >
             <Icon name="add-circle-outline" size={24} color="white" />
             <Text className="text-white text-lg ml-2">Đoạn chat mới</Text>

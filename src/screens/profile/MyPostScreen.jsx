@@ -42,10 +42,10 @@ export default function MyPostScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }} className="bg-white">
-      <TouchableOpacity className='p-2 absolute top-4 left-4 z-20' onPress={() => navigation.goBack()}>
+      {/* <TouchableOpacity className='p-2 absolute top-4 left-4 z-20' onPress={() => navigation.goBack()}>
         <ArrowLeft size={24} color="#374151" />
-      </TouchableOpacity>
-      <View className="bg-blue-100 py-6">
+      </TouchableOpacity> */}
+      <View className="py-4">
         <Text className="text-2xl font-bold text-center">Bài viết của tôi</Text>
       </View>
 

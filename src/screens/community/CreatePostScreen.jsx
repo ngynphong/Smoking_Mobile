@@ -6,6 +6,7 @@ import { ActivityIndicator } from 'react-native';
 import { ArrowLeft } from 'lucide-react-native';
 import { createPosts } from '../../api/postApi';
 import * as ImagePicker from 'expo-image-picker';
+import Toast from 'react-native-toast-message';
 export default function CreatePostScreen() {
     const navigation = useNavigation();
     const [title, setTitle] = useState('');
@@ -42,11 +43,21 @@ export default function CreatePostScreen() {
             }
             console.log(data)
             await createPosts(data);
-            Alert.alert('Thành công', 'Đã tạo bài viết mới');
+            Toast.show({
+                type: 'success',
+                text1: 'Thành công',
+                text2: 'Bài viết đã được tạo thành công',
+                position: 'top',
+            })
             navigation.goBack();
         } catch (err) {
             console.log(err);
-            Alert.alert('Lỗi', 'Không thể tạo bài viết');
+            Toast.show({
+                type: 'error',
+                text1: 'Lỗi',
+                text2: 'Không thể tạo bài viết',
+                position: 'top',
+            })
         } finally {
             setLoading(false);
         }

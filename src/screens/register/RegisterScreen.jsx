@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { register } from '../../api/authApi';
+import Toast from 'react-native-toast-message';
 
 export default function RegisterScreen({ navigation }) {
   const [formData, setFormData] = useState({
@@ -40,13 +41,28 @@ export default function RegisterScreen({ navigation }) {
       const response = await register(formData);
 
       if (response.status === 200) {
-        Alert.alert('Đăng ký thành công xác nhận email của bạn');
+        Toast.show({
+          type: 'success',
+          text1: 'Thành công',
+          text2: 'Đăng ký thành công, xác nhận email của bạn',
+          position: 'top',
+        });
         navigation.navigate('VerifyEmail', { email: formData.email });
       } else {
-        Alert.alert('Đăng ký thất bại', response.data.message || 'Sai thông tin');
+        Toast.show({
+          type: 'error',
+          text1: 'Đăng ký thất bại',
+          text2: response.data.message || 'Sai thông tin',
+          position: 'top',
+        });
       }
     } catch (error) {
-      Alert.alert('Lỗi hệ thống', error.message);
+      Toast.show({
+        type: 'error',
+        text1: 'Lỗi hệ thống',
+        text2: error.message,
+        position: 'top',
+      });
     }
   };
   return (

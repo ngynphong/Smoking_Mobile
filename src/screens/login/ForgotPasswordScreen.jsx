@@ -1,9 +1,10 @@
-import { View, Text, TextInput, Alert, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import { useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { requestPasswordReset } from '../../api/authApi';
 import { useNavigation } from '@react-navigation/native';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import Toast from 'react-native-toast-message';
 
 export default function ForgotPasswordScreen() {
     const [email, setEmail] = useState('');
@@ -12,20 +13,40 @@ export default function ForgotPasswordScreen() {
 
     const handleRequestOtp = async () => {
         if (!email) {
-            Alert.alert('Lỗi', 'Vui lòng nhập email của bạn');
+            Toast.show({
+                type: 'error',
+                text1: 'Lỗi',
+                text2: 'Vui lòng nhập email của bạn',
+                position: 'top',
+            });
             return;
         }
         setIsLoading(true);
         try {
             const response = await requestPasswordReset({ email });
             if (response.status === 200) {
-                Alert.alert('Thành công', 'Mã OTP đã được gửi đến email của bạn.');
+                Toast.show({
+                    type: 'success',
+                    text1: 'Thành công',
+                    text2: 'Mã OTP đã được gửi đến email của bạn.',
+                    position: 'top',
+                });
                 navigation.navigate('VerifyOtp', { email });
             } else {
-                Alert.alert('Lỗi', response.data.message || 'Đã có lỗi xảy ra.');
+                Toast.show({
+                    type: 'error',
+                    text1: 'Lỗi',
+                    text2: response.data.message || 'Đã có lỗi xảy ra.',
+                    position: 'top',
+                });
             }
         } catch (error) {
-            Alert.alert('Lỗi hệ thống', error.response?.data?.message || error.message);
+            Toast.show({
+                type: 'error',
+                text1: 'Lỗi hệ thống',
+                text2: error.response?.data?.message || error.message,
+                position: 'top',
+            });
         } finally {
             setIsLoading(false);
         }

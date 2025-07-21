@@ -1,10 +1,9 @@
 import React, { useContext, useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, SafeAreaView, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, SafeAreaView, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { X, Plus, Minus } from 'lucide-react-native';
 import { logRelapse } from '../../api/relapseAPI'; // API call mới
 import Toast from 'react-native-toast-message';
-// import { AuthContext } from '../../contexts/AuthContext';
 
 const activities = [
     { label: 'Uống cà phê', value: 'drinking_coffee', icon: '☕️' },
@@ -29,7 +28,6 @@ const RelapseLoggingScreen = () => {
     const [activity, setActivity] = useState(null);
     const [emotion, setEmotion] = useState(null);
     const [loading, setLoading] = useState(false);
-    // const {user} = useContext(AuthContext);
 
     const handleLogRelapse = async () => {
         setLoading(true);
@@ -55,7 +53,7 @@ const RelapseLoggingScreen = () => {
                 text1: 'Thành công',
                 text2: 'Cảm ơn bạn đã ghi nhận. Hãy tiếp tục cố gắng!',
                 position: 'top',
-                onHide: () => navigation.goBack() // Chỉ navigate sau khi Toast ẩn đi
+                onHide: () => navigation.goBack()
             });
 
         } catch (error) {

@@ -5,6 +5,7 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 import { bookingMeetSession } from '../../api/meetSessionApi';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeft } from 'lucide-react-native';
+import Toast from 'react-native-toast-message';
 
 const BookingScreen = () => {
     const route = useRoute();
@@ -24,15 +25,30 @@ const BookingScreen = () => {
 
     const handleBooking = async () => {
         if (!selectedDate) {
-            Alert.alert('Lỗi', 'Vui lòng chọn một ngày.');
+            Toast.show({
+                type: 'error',
+                text1: 'Lỗi',
+                text2: 'Vui lòng chọn một ngày.',
+                position: 'top'
+            });
             return;
         }
         if (!selectedTime) {
-            Alert.alert('Lỗi', 'Vui lòng chọn một giờ hẹn.');
+            Toast.show({
+                type: 'error',
+                text1: 'Lỗi',
+                text2: 'Vui lòng chọn một giờ hẹn.',
+                position: 'top'
+            });
             return;
         }
         if (!purpose) {
-            Alert.alert('Lỗi', 'Vui lòng nhập mục đích cuộc hẹn.');
+            Toast.show({
+                type: 'error',
+                text1: 'Lỗi',
+                text2: 'Vui lòng nhập mục đích cuộc hẹn.',
+                position: 'top'
+            });
             return;
         }
 
@@ -46,11 +62,21 @@ const BookingScreen = () => {
                 purpose: purpose,
             };
             await bookingMeetSession(data);
-            Alert.alert('Thành công', 'Yêu cầu đặt lịch của bạn đã được gửi đi.');
+            Toast.show({
+                type: 'success',
+                text1: 'Thành công',
+                text2: 'Yêu cầu đặt lịch của bạn đã được gửi đi.',
+                position: 'top'
+            });
             navigation.goBack();
         } catch (error) {
             console.error('Error booking meet session:', error);
-            Alert.alert('Lỗi', 'Không thể đặt lịch. Vui lòng thử lại.');
+            Toast.show({
+                type: 'error',
+                text1: 'Lỗi',
+                text2: 'Không thể đặt lịch. Vui lòng thử lại.',
+                position: 'top'
+            });
         }
     };
 

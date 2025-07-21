@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { resetPassword } from '../../api/authApi';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import Toast from 'react-native-toast-message';
 
 export default function ResetPasswordScreen() {
     const [password, setPassword] = useState('');
@@ -16,24 +17,49 @@ export default function ResetPasswordScreen() {
 
     const handleResetPassword = async () => {
         if (password !== confirmPassword) {
-            Alert.alert('Lỗi', 'Mật khẩu không khớp.');
+            Toast.show({
+                type: 'error',
+                text1: 'Lỗi',
+                text2: 'Mật khẩu không khớp.',
+                position: 'top',
+            });
             return;
         }
         if (password.length < 6) {
-            Alert.alert('Lỗi', 'Mật khẩu phải có ít nhất 6 ký tự.');
+            Toast.show({
+                type: 'error',
+                text1: 'Lỗi',
+                text2: 'Mật khẩu phải có ít nhất 6 ký tự.',
+                position: 'top',
+            });
             return;
         }
         setIsLoading(true);
         try {
             const response = await resetPassword({ email, newPassword: password, resetToken });
             if (response.status === 200) {
-                Alert.alert('Thành công', 'Mật khẩu của bạn đã được đặt lại. Vui lòng đăng nhập.');
+                Toast.show({
+                    type: 'success',
+                    text1: 'Thành công',
+                    text2: 'Mật khẩu của bạn đã được đặt lại. Vui lòng đăng nhập.',
+                    position: 'top',
+                });
                 navigation.navigate('Login');
             } else {
-                Alert.alert('Lỗi', response.data.message || 'Đã có lỗi xảy ra.');
+                Toast.show({
+                    type: 'error',
+                    text1: 'Lỗi',
+                    text2: response.data.message || 'Đã có lỗi xảy ra.',
+                    position: 'top',
+                });
             }
         } catch (error) {
-            Alert.alert('Lỗi hệ thống', error.response?.data?.message || error.message);
+            Toast.show({
+                type: 'error',
+                text1: 'Lỗi hệ thống',
+                text2: error.response?.data?.message || error.message,
+                position: 'top',
+            });
         } finally {
             setIsLoading(false);
         }

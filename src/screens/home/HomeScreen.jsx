@@ -160,15 +160,16 @@ export default function HomeScreen() {
             <BlogPreviewList />
           </View>
 
-          
+
         </View>
         {/* Subscription */}
         <SubscriptionPackages />
 
         {/* Feedback */}
-        <FeedbackSlider />
+        {/* <FeedbackSlider /> */}
       </ScrollView>
       <FloatingActionButton />
+
     </SafeAreaView>
   );
 }

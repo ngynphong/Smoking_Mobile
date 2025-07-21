@@ -26,7 +26,7 @@ const CommunityScreen = () => {
         }
       };
       fetchPosts();
-      
+
       // Ensure tab bar is visible when screen is focused
       setTabBarVisible(true);
     }, [])
@@ -85,7 +85,7 @@ const CommunityScreen = () => {
       )}
 
       <TouchableOpacity
-        className="absolute bottom-20 right-6 bg-blue-600 w-14 h-14 rounded-full justify-center items-center shadow-lg"
+        className="absolute bottom-24 right-6 bg-blue-600 w-14 h-14 rounded-full justify-center items-center shadow-lg"
         onPress={() => navigation.navigate('CreatePost')}
       >
         <Text className="text-white text-3xl">+</Text>

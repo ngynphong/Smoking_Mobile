@@ -8,6 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import Loading from '../../components/Loading';
 import { ChevronDown, ChevronUp } from 'lucide-react-native';
 import { TabBarContext } from '../../contexts/TabBarContext';
+import Toast from 'react-native-toast-message';
 
 const TaskItem = ({ task }) => (
   <View className="mb-2 p-3 bg-gray-100 rounded-md border border-gray-200">
@@ -93,8 +94,13 @@ const QuitPlanScreen = () => {
       await cloneQuitPlanPublic(id);
       navigation.navigate('MyQuitPlan')
     } catch (err) {
-      Alert.alert('Sử dụng kế hoạch thất bại!')
-      console.log('Lỗi khi clone kế hoạch',err)
+      Toast.show({
+        type: 'error',
+        text1: 'Lỗi',
+        text2: err.response.data.message,
+        position: 'top',
+      });
+      // console.log('Lỗi khi clone kế hoạch',err)
     } 
   };
 

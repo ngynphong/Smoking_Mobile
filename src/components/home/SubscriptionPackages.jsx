@@ -17,6 +17,7 @@ import { getPackages } from '../../api/packageApi';
 import { createSubscription, createPaymentLink } from '../../api/paymentApi';
 import { getMyActiveSubscription } from '../../api/subscriptionApi';
 import Loading from '../Loading';
+import Toast from 'react-native-toast-message';
 
 // Component được tối ưu hóa cho giao diện sạch sẽ và hiện đại
 const SubscriptionPackages = () => {
@@ -139,7 +140,12 @@ const SubscriptionPackages = () => {
             }
         } catch (error) {
             const message = error.response?.data?.message || error.message || "Lỗi thanh toán.";
-            Alert.alert("Lỗi", message);
+            Toast.show({
+                type: 'error',
+                text1: 'Lỗi thanh toán',
+                text2: message,
+                position: 'top'
+            })
         } finally {
             setPaymentLoading(false);
         }

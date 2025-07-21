@@ -4,6 +4,7 @@ import { getUser } from '../../utils/authStorage';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { editProfile, getProfile } from '../../api/userApi';
 import * as ImagePicker from 'expo-image-picker';
+import Toast from 'react-native-toast-message';
 
 export default function ProfileDetail({ navigation }) {
     const [user, setUser] = useState(null);
@@ -41,7 +42,12 @@ export default function ProfileDetail({ navigation }) {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
         if (status !== 'granted') {
-            Alert.alert('Lỗi', 'Chúng tôi cần quyền truy cập vào thư viện ảnh của bạn!');
+            Toast.show({
+                type: 'error',
+                text1: 'Quyền truy cập ảnh',
+                text2: 'Vui lòng cấp quyền truy cập ảnh để thay đổi ảnh đại diện.',
+                position: 'top',
+            });
             return;
         }
 

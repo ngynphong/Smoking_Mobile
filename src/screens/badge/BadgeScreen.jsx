@@ -7,6 +7,7 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { TabBarContext } from '../../contexts/TabBarContext';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Toast from 'react-native-toast-message';
 
 const BadgeCard = ({ badge, onShare }) => {
   const tierColor = {
@@ -108,9 +109,19 @@ const BadgeScreen = () => {
       };
       await shareBadge(data);
       setModalVisible(false);
-      alert('Chia sẻ huy hiệu thành công!');
+      Toast.show({
+        type: 'success',
+        text1: 'Chia sẻ thành công',
+        text2: 'Huy hiệu của bạn đã được chia sẻ!',
+        position: 'top',
+      })
     } catch (error) {
-      alert('Chia sẻ thất bại!');
+      Toast.show({
+        type: 'error',
+        text1: 'Chia sẻ thất bại',
+        text2: error.message,
+        position: 'top',
+      })
     }
   };
 

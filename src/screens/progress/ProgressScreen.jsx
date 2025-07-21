@@ -17,6 +17,7 @@ import { AuthContext } from '../../contexts/AuthContext';
 import { createProgress, getProgressByPlan, getProgressByStage, getProgressOneStage, deleteProgress, updateProgress, getProgressStat, getTotalMoneySaved, getStreakNumber } from '../../api/progressApi';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { TabBarContext } from '../../contexts/TabBarContext';
+import Toast from 'react-native-toast-message';
 
 const StatCard = ({ icon, label, value, unit, color }) => (
   <View className="flex-1 items-center p-2">
@@ -153,7 +154,12 @@ const ProgressScreen = () => {
 
   const handleCreateProgress = async () => {
     if (!currentStage || !progressForm.cigarettes_smoked) {
-      Alert.alert('Lỗi', 'Vui lòng nhập đầy đủ thông tin');
+      Toast.show({
+        type: 'error',
+        text1: 'Lỗi',
+        text2: 'Vui lòng nhập đầy đủ thông tin',
+        position: 'top',
+      });
       return;
     }
 
@@ -186,7 +192,12 @@ const ProgressScreen = () => {
         health_status: '',
         date: new Date().toISOString().split('T')[0]
       });
-      Alert.alert('Thành công', 'Đã ghi nhận tiến trình hôm nay!');
+      Toast.show({
+        type: 'success',
+        text1: 'Thành công',
+        text2: 'Đã ghi nhận tiến trình hôm nay!',
+        position: 'top',
+      });
     } catch (error) {
       let message = 'Không thể ghi nhận tiến trình';
       if (error?.response?.data?.error) message = error.response.data.error;
@@ -197,14 +208,24 @@ const ProgressScreen = () => {
 
   const handleUpdateProgress = async () => {
     if (!currentStage || !progressForm.cigarettes_smoked) {
-      Alert.alert('Lỗi', 'Vui lòng nhập đầy đủ thông tin');
+      Toast.show({
+        type: 'error',
+        text1: 'Lỗi',
+        text2: 'Vui lòng nhập đầy đủ thông tin',
+        position: 'top',
+      });
       return;
     }
 
     try {
       // Đảm bảo selectedProgress có tồn tại khi trong chế độ edit
       if (!selectedProgress?._id) {
-        Alert.alert('Lỗi', 'Không tìm thấy tiến trình cần cập nhật');
+        Toast.show({
+          type: 'error',
+          text1: 'Lỗi',
+          text2: 'Không tìm thấy tiến trình cần cập nhật',
+          position: 'top',
+        });
         return;
       }
 
@@ -235,9 +256,19 @@ const ProgressScreen = () => {
       setShowProgressModal(false);
       setModalMode('create');
       setSelectedProgress(null);
-      Alert.alert('Thành công', 'Đã cập nhật tiến trình!');
+      Toast.show({
+        type: 'success',
+        text1: 'Thành công',
+        text2: 'Đã cập nhật tiến trình!',
+        position: 'top',
+      });
     } catch (err) {
-      Alert.alert('Lỗi', 'Không thể cập nhật tiến trình');
+      Toast.show({
+        type: 'error',
+        text1: 'Lỗi',
+        text2: 'Không thể cập nhật tiến trình',
+        position: 'top',
+      });
     }
   };
 
@@ -283,9 +314,19 @@ const ProgressScreen = () => {
         }
       }
       setProgresses(progressesObj);
-      Alert.alert('Thành công', 'Đã xóa tiến trình!');
+      Toast.show({
+        type: 'success',
+        text1: 'Thành công',
+        text2: 'Đã xóa tiến trình!',
+        position: 'top',
+      });
     } catch (error) {
-      Alert.alert('Lỗi', 'Không thể xóa tiến trình');
+      Toast.show({
+        type: 'error',
+        text1: 'Lỗi',
+        text2: 'Không thể xóa tiến trình',
+        position: 'top',
+      });
     }
   };
 

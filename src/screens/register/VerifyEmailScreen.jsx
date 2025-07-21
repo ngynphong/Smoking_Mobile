@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { verifyEmail } from '../../api/authApi';
+import Toast from 'react-native-toast-message';
 
 const VerifyEmailScreen = ({ route, navigation }) => {
     const { email } = route.params;
@@ -12,7 +13,12 @@ const VerifyEmailScreen = ({ route, navigation }) => {
             if (res.status !== 200) {
                 throw new Error(res.data.message || 'Verification failed');
             }
-            Alert.alert('Xác thực email thành công', res.data.message);
+            Toast.show({
+                type: 'success',
+                text1: 'Thành công',
+                text2: 'Xác thực thành công, vui lòng đăng nhập',
+                position: 'top',
+            });
             navigation.navigate('Login');
         } catch (err) {
             Alert.alert('Error', err.response?.data?.message || 'Verification failed');

@@ -6,6 +6,7 @@ import { ArrowLeft } from 'lucide-react-native';
 import { sendRequestQuitPlan } from '../../api/quitPlanApi';
 import { useNavigation } from '@react-navigation/native';
 import CoachCard from '../../components/CoachCard';
+import Toast from 'react-native-toast-message';
 
 const CreateQuitPlanRequest = () => {
     const [coaches, setCoaches] = useState([]);
@@ -31,19 +32,35 @@ const CreateQuitPlanRequest = () => {
 
     const handleSubmit = async () => {
         if (!selectedCoachId || !form.name || !form.reason) {
-            return Alert.alert('Thiếu thông tin', 'Vui lòng điền đầy đủ thông tin và chọn huấn luyện viên.');
+            Toast.show({
+                type: 'error',
+                text1: 'Thiếu thông tin',
+                text2: 'Vui lòng điền đầy đủ thông tin và chọn huấn luyện viên.',
+                position: 'top'
+            });
+            return;
         }
 
-        // Check if start date is in the past
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         if (form.start_date < today) {
-            return Alert.alert('Ngày không hợp lệ', 'Ngày bắt đầu không thể là ngày trong quá khứ.');
+            Toast.show({
+                type: 'error',
+                text1: 'Ngày không hợp lệ',
+                text2: 'Ngày bắt đầu không thể là ngày trong quá khứ.',
+                position: 'top'
+            });
+            return;
         }
 
-        // Check if target date is before start date
         if (form.target_quit_date < form.start_date) {
-            return Alert.alert('Ngày không hợp lệ', 'Ngày mục tiêu cai không thể sớm hơn ngày bắt đầu.');
+            Toast.show({
+                type: 'error',
+                text1: 'Ngày không hợp lệ',
+                text2: 'Ngày mục tiêu cai không thể sớm hơn ngày bắt đầu.',
+                position: 'top'
+            });
+            return;
         }
 
         try {
@@ -55,10 +72,20 @@ const CreateQuitPlanRequest = () => {
                 coach_id: selectedCoachId,
             };
             await sendRequestQuitPlan(payload);
-            Alert.alert('Thành công', 'Yêu cầu của bạn đã được gửi');
+            Toast.show({
+                type: 'success',
+                text1: 'Thành công',
+                text2: 'Yêu cầu của bạn đã được gửi',
+                position: 'top'
+            });
+            navigation.goBack();
         } catch (error) {
-            console.error(error);
-            Alert.alert('Thất bại', 'Không thể gửi yêu cầu');
+            Toast.show({
+                type: 'error',
+                text1: 'Thất bại',
+                text2: 'Không thể gửi yêu cầu',
+                position: 'top'
+            });
         }
     };
 
@@ -70,7 +97,12 @@ const CreateQuitPlanRequest = () => {
             today.setHours(0, 0, 0, 0);
 
             if (date < today) {
-                Alert.alert('Ngày không hợp lệ', 'Không thể chọn ngày trong quá khứ.');
+                Toast.show({
+                    type: 'error',
+                    text1: 'Ngày không hợp lệ',
+                    text2: 'Không thể chọn ngày trong quá khứ.',
+                    position: 'top'
+                });
                 return;
             }
 
@@ -86,7 +118,12 @@ const CreateQuitPlanRequest = () => {
         setShowTargetDatePicker(false);
         if (date) {
             if (date < form.start_date) {
-                Alert.alert('Ngày không hợp lệ', 'Ngày mục tiêu cai không thể sớm hơn ngày bắt đầu.');
+                Toast.show({
+                    type: 'error',
+                    text1: 'Ngày không hợp lệ',
+                    text2: 'Ngày mục tiêu cai không thể sớm hơn ngày bắt đầu.',
+                    position: 'top'
+                });
                 return;
             }
             handleChange('target_quit_date', date);
@@ -131,7 +168,7 @@ const CreateQuitPlanRequest = () => {
                     onChange={handleTargetDateChange}
                 />
             )}
-            
+
             <Text className="text-lg font-semibold text-gray-800 mb-2">Chọn Huấn Luyện Viên:</Text>
             {coaches.map(coach => (
                 <CoachCard key={coach.coach_id._id} coach={coach} selected={coach.coach_id._id === selectedCoachId} onSelect={setSelectedCoachId} />

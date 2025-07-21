@@ -4,6 +4,7 @@ import { editPosts, getPostsById } from '../../api/postApi';
 import { getTags } from '../../api/tagAPi';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { ArrowLeft } from 'lucide-react-native';
+import Toast from 'react-native-toast-message';
 
 export default function EditPostScreen() {
     const navigation = useNavigation();
@@ -42,7 +43,12 @@ export default function EditPostScreen() {
 
     const handleEdit = async () => {
         if (!title.trim() || !content.trim() || !selectedTag) {
-            Alert.alert('Lỗi', 'Vui lòng nhập đầy đủ thông tin');
+            Toast.show({
+                type: 'error',
+                text1: 'Lỗi',
+                text2: 'Vui lòng nhập đày đủ thông tin',
+                position: 'top',
+            })
             return;
         }
         setLoading(true);
@@ -55,11 +61,21 @@ export default function EditPostScreen() {
             }
 
             await editPosts(postId, data);
-            Alert.alert('Thành công', 'Đã sửa bài viết');
+            Toast.show({
+                type: 'success',
+                text1: 'Thành công',
+                text2: 'Đã sửa bài viết',
+                position: 'top',
+            });
             navigation.goBack();
         } catch (err) {
             console.log(err);
-            Alert.alert('Lỗi', 'Không thể sửa bài viết');
+            Toast.show({
+                type: 'error',
+                text1: 'Lỗi',
+                text2: 'Không thể sửa bài viết',
+                position: 'top',
+            });
         } finally {
             setLoading(false);
         }

@@ -131,7 +131,16 @@ export default function MyQuitPlanScreen() {
           </TouchableOpacity>
         </View>
       ) : (
-        plans.map(plan => (
+        plans.map(plan => {
+          const planStages = stages.filter(stage => stage.plan_id === plan._id);
+          const allStagesCompleted = planStages.length > 0 && planStages.every(stage => {
+            const stageTasks = tasks.filter(t => t.stage_id === stage._id);
+            return stageTasks.length > 0 && stageTasks.every(task => completedTaskIds.includes(task._id));
+          });
+
+          let previousStageCompleted = true;
+
+          return (
           <View key={plan._id} className="mb-6 p-2 bg-white rounded-xl shadow border border-gray-100">
             <View className='flex-row'>
               <View className="p-4 rounded-xl">
@@ -143,23 +152,39 @@ export default function MyQuitPlanScreen() {
               </View>
             </View>
             <Image source={{ uri: plan.image }} className='h-52 w-full mb-2 rounded-xl' />
-            {stages
-              .filter(stage => stage.plan_id === plan._id)
-              .map(stage => (
-                <StageItem
-                  key={stage._id}
-                  stage={stage}
-                  tasks={tasks.filter(t => t.stage_id === stage._id).map(task => ({
-                    ...task,
-                    completed: completedTaskIds.includes(task._id),
-                  }))}
-                  onCompleteTask={(taskId) => handleCompleteTask(taskId)}
-                  expanded={!!expandedStages[stage._id]}
-                  onToggle={() => setExpandedStages(prev => ({ ...prev, [stage._id]: !prev[stage._id] }))}
-                />
-              ))}
+            {planStages
+              .sort((a, b) => a.stage_number - b.stage_number)
+              .map(stage => {
+                const stageTasks = tasks.filter(t => t.stage_id === stage._id);
+                const isStageCompleted = stageTasks.length > 0 && stageTasks.every(task => completedTaskIds.includes(task._id));
+                const isLocked = !previousStageCompleted;
+                previousStageCompleted = isStageCompleted;
+
+                return (
+                  <StageItem
+                    key={stage._id}
+                    stage={stage}
+                    tasks={stageTasks.map(task => ({
+                      ...task,
+                      completed: completedTaskIds.includes(task._id),
+                    }))}
+                    onCompleteTask={(taskId) => handleCompleteTask(taskId)}
+                    expanded={!!expandedStages[stage._id]}
+                    onToggle={() => setExpandedStages(prev => ({ ...prev, [stage._id]: !prev[stage._id] }))}
+                    isLocked={isLocked}
+                  />
+                );
+              })}
+              {allStagesCompleted && (
+                <TouchableOpacity
+                  className="bg-green-500 p-3 rounded-lg mt-4"
+                  onPress={() => navigation.navigate('FeedbackCoach', { coachId: plan.coach_id, planId: plan._id })}
+                >
+                  <Text className="text-white text-center font-semibold">Đánh giá huấn luyện viên</Text>
+                </TouchableOpacity>
+              )}
           </View>
-        ))
+        )})
       )}
     </ScrollView>
   );

@@ -14,6 +14,9 @@ import ChatHistoryScreen from '../screens/chat/ChatHistoryScreen';
 import CoachListScreen from '../screens/meeting/CoachListScreen';
 import BookingScreen from '../screens/meeting/BookingScreen';
 import MyMeetingsScreen from '../screens/meeting/MyMeetingsScreen';
+import ProgressHistoryScreen from '../screens/progress/ProgressHistoryScreen';
+import FeedbackCoachScreen from '../screens/feedback/FeedbackCoachScreen';
+import RelapseLoggingScreen from '../screens/relapse/RelapseLoggingScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -62,11 +65,22 @@ export default function AppNavigator() {
           {!isFirstLaunch && authStatus && (
             <>
               <Stack.Screen name="MainTabs" component={MainTabs} />
-              <Stack.Screen name="ChatHistory" component={ChatHistoryScreen}  />
-              <Stack.Screen name="Chat" component={ChatScreen}  />
+              <Stack.Screen name="ChatHistory" component={ChatHistoryScreen} />
+              <Stack.Screen name="Chat" component={ChatScreen} />
               <Stack.Screen name="CoachList" component={CoachListScreen} />
-              <Stack.Screen name="BookingScreen" component={BookingScreen}/>
+              <Stack.Screen name="BookingScreen" component={BookingScreen} />
               <Stack.Screen name="MyMeetings" component={MyMeetingsScreen} />
+              <Stack.Screen name="ProgressHistory" component={ProgressHistoryScreen} />
+              <Stack.Screen name="FeedbackCoach" component={FeedbackCoachScreen} />
+              <Stack.Screen
+                name="RelapseLogging"
+                component={RelapseLoggingScreen}
+              // options={{
+              //   presentation: 'modal',
+              //   animation: 'slide_from_bottom',
+              //   headerShown: false
+              // }}
+              />
             </>
           )}
         </Stack.Navigator>

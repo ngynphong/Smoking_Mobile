@@ -35,3 +35,7 @@ export const getTotalMoneySaved = async (id) => {
 export const deleteProgress = async (id) => {
     return await axios.delete(`/progress/${id}`);
 }
+
+export const getProgressStat = async (planId) => {
+    return await axios.get(`/progress/plan/${planId}/smoking-stats`);
+}

@@ -19,14 +19,14 @@ export default function RegisterScreen({ navigation }) {
 
   const validateForm = () => {
     let newErrors = {};
-    if (!formData.name) newErrors.name = 'Name is required';
-    else if (formData.name.length < 3) newErrors.name = 'Name must be at least 3 characters';
-    if (!formData.email) newErrors.email = 'Email is required';
-    else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Email is invalid';
-    if (!formData.password) newErrors.password = 'Password is required';
-    else if (formData.password.length < 6) newErrors.password = 'Password must be at least 6 characters';
+    if (!formData.name) newErrors.name = 'Họ và tên là bắt buộc';
+    else if (formData.name.length < 3) newErrors.name = 'Họ và tên phải có ít nhất 3 ký tự';
+    if (!formData.email) newErrors.email = 'Email là bắt buộc';
+    else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Email không hợp lệ';
+    if (!formData.password) newErrors.password = 'Mật khẩu là bắt buộc';
+    else if (formData.password.length < 6) newErrors.password = 'Mật khẩu phải có ít nhất 6 ký tự';
     if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
+      newErrors.confirmPassword = 'Mật khẩu không khớp';
     }
 
     setErrors(newErrors);

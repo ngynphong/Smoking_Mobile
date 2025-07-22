@@ -65,12 +65,12 @@ export default function CreatePostScreen() {
 
     return (
         <ScrollView contentContainerStyle={{ padding: 16 }}>
-
-            <TouchableOpacity className='p-2 absolute top-4 left-4 z-20' onPress={() => navigation.goBack()}>
-                <ArrowLeft size={24} color="#374151" />
-            </TouchableOpacity>
-            <Text className='text-center text-2xl font-bold mb-4 relative'>Tạo bài viết</Text>
-
+            <View className="flex-row justify-center items-center mt-8">
+                <TouchableOpacity className='absolute top-2 left-4 z-20' onPress={() => navigation.goBack()}>
+                    <ArrowLeft size={24} color="#374151" />
+                </TouchableOpacity>
+                <Text className='text-center text-2xl font-bold mb-4 relative'>Tạo bài viết</Text>
+            </View>
             <Text className='text-lg font-bold mb-2'>Tiêu đề</Text>
             <TextInput
                 value={title}

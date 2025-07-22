@@ -32,8 +32,20 @@ export default function ProfileDetail({ navigation }) {
     const handleSave = async () => {
         try {           
             await editProfile(formData, user.id);
+            Toast.show({
+                type: 'success',
+                text1: 'Cập nhật thành công',
+                text2: 'Thông tin cá nhân đã được cập nhật.',
+                position: 'top',
+            })
         } catch (error) {
-            console.error("Error updating profile:", error);
+            // console.error("Error updating profile:", error);
+            Toast.show({
+                type: 'error',
+                text1: 'Cập nhật thất bại',
+                text2: 'Đã có lỗi xảy ra khi cập nhật thông tin cá nhân.',
+                position: 'top',
+            });
         }
         setIsEditing(false);
     };

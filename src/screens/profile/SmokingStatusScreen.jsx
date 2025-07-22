@@ -6,6 +6,7 @@ import { createSmokingStatus, deleteSmokingStatus, getSmokingStatus } from '../.
 import { ArrowLeft } from 'lucide-react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Loading from '../../components/Loading';
+import Toast from 'react-native-toast-message';
 const SmokingStatusScreen = () => {
     const [form, setForm] = useState({
         frequency: 'daily',
@@ -58,9 +59,19 @@ const SmokingStatusScreen = () => {
             setStatus(res.data);
             setShowModal(false);
             await fetchStatus();
-            alert('Đã lưu trạng thái hút thuốc thành công');
+            Toast.show({
+                type: 'success',
+                text1: 'Thành công',
+                text2: 'Cập nhật tình trạng hút thuốc thành công',
+                position: 'top',
+            });
         } catch (error) {
-            alert('Có lỗi xảy ra, vui lòng thử lại.');
+            Toast.show({
+                type: 'error',
+                text1: 'Lỗi',
+                text2: 'Có lỗi xảy ra, vui lòng thử lại.',
+                position: 'top',
+            });
             console.error(error);
         }
     };
@@ -71,9 +82,19 @@ const SmokingStatusScreen = () => {
             await deleteSmokingStatus(user.id);
             setStatus(null);
             setShowModal(true);
-            alert('Đã xóa trạng thái thành công');
+            Toast.show({
+                type: 'success',
+                text1: 'Thành công',
+                text2: 'Xóa thành công',
+                position: 'top',
+            });
         } catch (error) {
-            alert('Xóa thất bại');
+            Toast.show({
+                type: 'error',
+                text1: 'Lỗi',
+                text2: 'Xóa thất bại',
+                position: 'top',
+            });
             console.error(error);
         }
     };
@@ -118,7 +139,7 @@ const SmokingStatusScreen = () => {
             )}
 
             <Modal visible={showModal} animationType="slide">
-                <ScrollView className="flex-1 bg-white px-4 py-6">
+                <ScrollView className="flex-1 bg-white px-4 py-6 mt-4">
                     <Text className="text-xl font-bold text-center mb-6 text-gray-800">Thêm Tình Trạng Hút Thuốc</Text>
 
 

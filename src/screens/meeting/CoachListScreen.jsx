@@ -34,6 +34,8 @@ const CoachListScreen = () => {
             <View>
                 <Text className="text-lg font-bold text-gray-800">{item.coach_id.name}</Text>
                 <Text className="text-sm text-gray-600">{item.specialization}</Text>
+                <Text className="text-xs text-gray-400">Kinh nghiệm: {item.experience_years} năm</Text>
+                <Text className="text-xs text-gray-400">Buổi hỗ trợ: {item.total_sessions} buổi</Text>
             </View>
         </TouchableOpacity>
     );

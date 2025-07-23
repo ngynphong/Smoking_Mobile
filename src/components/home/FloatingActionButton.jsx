@@ -10,7 +10,7 @@ export default function FloatingActionButton() {
     const { user } = useContext(AuthContext);
 
     const handleChatPress = () => {
-        if (user.membership.subscriptionType === 'premium') {
+        if (user.membership.subscriptionType === 'plus' || user.membership.subscriptionType === 'premium') {
             navigation.navigate('ChatHistory')
         } else {
             Toast.show({

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { getMyQuitPlanRequests, deleteQuitPlanRequest } from '../../api/quitPlanApi';
 import { useNavigation } from '@react-navigation/native';
@@ -32,13 +32,17 @@ const RequestQuitPlanScreen = () => {
     const [requests, setRequests] = useState([]);
     const [loading, setLoading] = useState(true);
     const navigation = useNavigation();
-
+    const [errorSub, setErrorSub] = useState(false);
     const fetchRequests = async () => {
         try {
             const res = await getMyQuitPlanRequests();
             setRequests(res.data);
         } catch (error) {
-            console.error('Lỗi khi lấy danh sách yêu cầu:', error);
+            // console.error('Lỗi khi lấy danh sách yêu cầu:', error);
+            if(error.response && error.response.status === 403) {
+                setErrorSub(true);
+            }
+            setErrorSub(error.message);
         } finally {
             setLoading(false);
         }
@@ -63,6 +67,22 @@ const RequestQuitPlanScreen = () => {
         return (
             <View className="flex-1 justify-center items-center">
                 <Text>Đang tải...</Text>
+            </View>
+        );
+    }
+
+    if (errorSub) {
+        return (
+            <View className="flex-1 justify-center items-center bg-gray-50 p-4">
+                <Text className="text-lg text-center text-gray-700 mb-4">
+                    Tính năng này yêu cầu gói Plus hoặc Premium. Vui lòng nâng cấp để sử dụng.
+                </Text>
+                <TouchableOpacity
+                    onPress={() => navigation.navigate('Home')}
+                    className="bg-blue-500 px-6 py-3 rounded-lg"
+                >
+                    <Text className="text-white font-semibold">Nâng cấp ngay</Text>
+                </TouchableOpacity>
             </View>
         );
     }

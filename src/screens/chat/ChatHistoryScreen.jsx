@@ -10,16 +10,20 @@ const ChatHistoryScreen = () => {
   const { user } = useContext(AuthContext);
   const [chatSessions, setChatSessions] = useState([]);
   const navigation = useNavigation();
+  const [errorSub, setErrorSub] = useState(false);
 
   useEffect(() => {
     const fetchChatHistory = async () => {
       if (user?.id) {
         try {
           // This endpoint needs to be created on the backend
-          const response = await getChatSessions(user.id); 
+          const response = await getChatSessions(user.id);
           setChatSessions(response.data);
         } catch (error) {
-          console.error("Failed to fetch chat history:", error);
+          // console.error("Failed to fetch chat history:", error);
+          if (error.response && error.response.status === 403) {
+            setErrorSub(true);
+          }
         }
       }
     };
@@ -41,8 +45,24 @@ const ChatHistoryScreen = () => {
         <Icon name="chevron-forward-outline" size={20} color="#6b7280" />
       </View>
     </TouchableOpacity>
-    
+
   );
+
+    if (errorSub) {
+        return (
+            <View className="flex-1 justify-center items-center bg-gray-50 p-4">
+                <Text className="text-lg text-center text-gray-700 mb-4">
+                    Tính năng này yêu cầu gói Plus hoặc Premium. Vui lòng nâng cấp để sử dụng.
+                </Text>
+                <TouchableOpacity
+                    onPress={() => navigation.goBack()}
+                    className="bg-blue-500 px-6 py-3 rounded-lg"
+                >
+                    <Text className="text-white font-semibold">Nâng cấp ngay</Text>
+                </TouchableOpacity>
+            </View>
+        );
+    }
 
   return (
     <View className="flex-1 p-4 bg-gray-100">

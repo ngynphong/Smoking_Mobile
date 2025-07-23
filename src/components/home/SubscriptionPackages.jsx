@@ -101,9 +101,8 @@ const SubscriptionPackages = () => {
                 });
                 setPackages(transformed);
             }
-
-            if (activeSubResponse.data) {
-                setActiveSubscriptionId(activeSubResponse.data.package_id?._id);
+            if (activeSubResponse.data && activeSubResponse.data.length > 0) {
+                setActiveSubscriptionId(activeSubResponse.data[0].package_id?._id);
             }
 
         } catch (err) {
@@ -119,11 +118,7 @@ const SubscriptionPackages = () => {
     }, []);
 
     const handlePayment = async (packageId, price) => {
-        if (price === "Miễn phí") {
-            Alert.alert("Thông báo", "Bạn đang sử dụng gói miễn phí.");
-            return;
-        }
-
+        
         setPaymentLoading(true);
         try {
             const subResponse = await createSubscription(packageId);

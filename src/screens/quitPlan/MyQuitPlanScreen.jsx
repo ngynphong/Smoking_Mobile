@@ -17,6 +17,7 @@ export default function MyQuitPlanScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigation = useNavigation();
+  const [expandedPlans, setExpandedPlans] = useState({});
   const [expandedStages, setExpandedStages] = useState({});
   const [completedTaskIds, setCompletedTaskIds] = useState([]);
   const { setTabBarVisible } = useContext(TabBarContext);
@@ -132,59 +133,79 @@ export default function MyQuitPlanScreen() {
         </View>
       ) : (
         plans.map(plan => {
-          const planStages = stages.filter(stage => stage.plan_id === plan._id);
+          const planStages = stages.filter(stage => stage.plan_id === plan._id).sort((a, b) => a.stage_number - b.stage_number);
           const allStagesCompleted = planStages.length > 0 && planStages.every(stage => {
             const stageTasks = tasks.filter(t => t.stage_id === stage._id);
             return stageTasks.length > 0 && stageTasks.every(task => completedTaskIds.includes(task._id));
           });
 
-          let previousStageCompleted = true;
+          const isPlanExpanded = !!expandedPlans[plan._id];
 
           return (
-          <View key={plan._id} className="mb-6 p-2 bg-white rounded-xl shadow border border-gray-100">
-            <View className='flex-row'>
-              <View className="p-4 rounded-xl">
-                <Text className="text-xl font-semibold text-gray-900 mb-1">{plan.name}</Text>
-                <Text className="text-sm text-gray-700 mb-1">🎯 Lý do: {plan.reason}</Text>
-                <Text className="text-xs text-gray-500">
-                  {new Date(plan.start_date).toLocaleDateString()} ➝ {new Date(plan.target_quit_date).toLocaleDateString()}
-                </Text>
-              </View>
-            </View>
-            <Image source={{ uri: plan.image }} className='h-52 w-full mb-2 rounded-xl' />
-            {planStages
-              .sort((a, b) => a.stage_number - b.stage_number)
-              .map(stage => {
-                const stageTasks = tasks.filter(t => t.stage_id === stage._id);
-                const isStageCompleted = stageTasks.length > 0 && stageTasks.every(task => completedTaskIds.includes(task._id));
-                const isLocked = !previousStageCompleted;
-                previousStageCompleted = isStageCompleted;
+            <View key={plan._id} className="mb-6 p-4 bg-white rounded-xl shadow-md border border-gray-100">
+              <TouchableOpacity onPress={() => setExpandedPlans(prev => ({ ...prev, [plan._id]: !prev[plan._id] }))} activeOpacity={0.9}>
+                <View className='flex-row justify-between items-center'>
+                  <View className="flex-1">
+                    <Text className="text-xl font-bold text-gray-900 mb-1">{plan.name}</Text>
+                    <Text className="text-sm text-gray-700 mb-2">🎯 Lý do: {plan.reason}</Text>
+                    <Text className="text-xs text-gray-500">
+                      {new Date(plan.start_date).toLocaleDateString()} ➝ {new Date(plan.target_quit_date).toLocaleDateString()}
+                    </Text>
+                  </View>
+                  {isPlanExpanded ? <ChevronUp size={24} color="#374151" /> : <ChevronDown size={24} color="#374151" />}
+                </View>
+                <Image source={{ uri: plan.image }} className='h-52 w-full mb-4 rounded-xl' />
+              </TouchableOpacity>
 
-                return (
-                  <StageItem
-                    key={stage._id}
-                    stage={stage}
-                    tasks={stageTasks.map(task => ({
-                      ...task,
-                      completed: completedTaskIds.includes(task._id),
-                    }))}
-                    onCompleteTask={(taskId) => handleCompleteTask(taskId)}
-                    expanded={!!expandedStages[stage._id]}
-                    onToggle={() => setExpandedStages(prev => ({ ...prev, [stage._id]: !prev[stage._id] }))}
-                    isLocked={isLocked}
-                  />
-                );
-              })}
-              {allStagesCompleted && (
-                <TouchableOpacity
-                  className="bg-green-500 p-3 rounded-lg mt-4"
-                  onPress={() => navigation.navigate('FeedbackCoach', { coachId: plan.coach_id, planId: plan._id })}
-                >
-                  <Text className="text-white text-center font-semibold">Đánh giá huấn luyện viên</Text>
-                </TouchableOpacity>
+              {isPlanExpanded && (
+                <View className="mt-4">
+                  {planStages
+                    .map((stage, index) => {
+                      const stageTasks = tasks.filter(t => t.stage_id === stage._id);
+                      // const isStageCompleted = stageTasks.length > 0 && stageTasks.every(task => completedTaskIds.includes(task._id));
+                      const isStageCompleted = stage.is_completed === true;
+                      let isLocked = false;
+                      if (index > 0) {
+                        const previousStage = planStages[index - 1];
+                        const today = new Date();
+                        const previousStageEndDate = new Date(previousStage.end_date);
+                        // Set time to 0 to compare dates only
+                        today.setHours(0, 0, 0, 0);
+                        previousStageEndDate.setHours(0, 0, 0, 0);
+                        if (today <= previousStageEndDate) {
+                          isLocked = true;
+                        }
+                      }
+
+                      return (
+                        <StageItem
+                          key={stage._id}
+                          stage={stage}
+                          tasks={stageTasks.map(task => ({
+                            ...task,
+                            completed: completedTaskIds.includes(task._id),
+                          }))}
+                          onCompleteTask={(taskId) => handleCompleteTask(taskId)}
+                          expanded={!!expandedStages[stage._id]}
+                          onToggle={() => setExpandedStages(prev => ({ ...prev, [stage._id]: !prev[stage._id] }))}
+                          isLocked={isLocked}
+                          isCompleted={isStageCompleted}
+                        />
+                      );
+                    })}
+                  {allStagesCompleted && (
+                    <TouchableOpacity
+                      className="bg-green-500 p-3 rounded-lg mt-4"
+                      onPress={() => navigation.navigate('FeedbackCoach', { coachId: plan.coach_id, planId: plan._id })}
+                    >
+                      <Text className="text-white text-center font-semibold">Đánh giá huấn luyện viên</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
               )}
-          </View>
-        )})
+            </View>
+          )
+        })
       )}
     </ScrollView>
   );

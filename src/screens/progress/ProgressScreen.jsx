@@ -493,6 +493,11 @@ const ProgressScreen = () => {
                       <Text className="text-xs text-gray-500">
                         Từ {formatDate(stage.start_date)} đến {formatDate(stage.end_date)}
                       </Text>
+                      <View className="mt-2 flex-row flex-wrap">
+                        <Text className="text-xs text-gray-600 mr-4">Giới hạn: <Text className="font-bold">{stage.cigarette_limit} điếu</Text></Text>
+                        <Text className="text-xs text-gray-600 mr-4">Số lần thử lại: <Text className="font-bold">{stage.attempt_number}</Text></Text>
+                        <Text className="text-xs text-gray-600">Đã hút: <Text className="font-bold">{stage.total_cigarettes_smoked} điếu</Text></Text>
+                      </View>
                     </View>
                   </View>
 

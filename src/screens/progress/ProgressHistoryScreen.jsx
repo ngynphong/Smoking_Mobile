@@ -51,6 +51,10 @@ const ProgressHistoryScreen = () => {
               <Text className="text-gray-600">Tiết kiệm: </Text>
               <Text className="font-medium text-green-600">{item.money_saved}đ</Text>
           </View>
+      <View className="flex-row justify-start mt-1">
+        <Text className="text-gray-600">Lần thử lại: </Text>
+        <Text className="font-medium text-orange-600">{item.attempt_number}</Text>
+      </View>
     </View>
   );
 

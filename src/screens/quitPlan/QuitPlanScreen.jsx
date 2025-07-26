@@ -26,6 +26,11 @@ const StageItem = ({ stage, tasks, expanded, onToggle }) => (
         <Text className="text-xs text-gray-500 mt-1">
           {new Date(stage.start_date).toLocaleDateString('vi-VN')} ➝ {new Date(stage.end_date).toLocaleDateString('vi-VN')}
         </Text>
+        <View className="mt-2 flex-row flex-wrap">
+            <Text className="text-xs text-gray-600 mr-4">Giới hạn: <Text className="font-bold">{stage.cigarette_limit} điếu</Text></Text>
+            <Text className="text-xs text-gray-600 mr-4">Số lần thử lại: <Text className="font-bold">{stage.attempt_number}</Text></Text>
+            <Text className="text-xs text-gray-600">Đã hút: <Text className="font-bold">{stage.total_cigarettes_smoked} điếu</Text></Text>
+        </View>
       </View>
       {expanded ? <ChevronUp size={22} color="#2563eb" /> : <ChevronDown size={22} color="#2563eb" />}
     </TouchableOpacity>
@@ -44,6 +49,7 @@ const QuitPlanScreen = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigation = useNavigation();
+  const [expandedPlans, setExpandedPlans] = useState({});
   const [expandedStages, setExpandedStages] = useState({});
   const { setTabBarVisible } = useContext(TabBarContext);
   const lastScrollY = useRef(0);
@@ -142,36 +148,49 @@ const QuitPlanScreen = () => {
             </TouchableOpacity>
           </View>
         ) : (
-          plans.map(plan => (
-            <View key={plan._id} className="mb-6 p-4 bg-white rounded-xl shadow-sm border border-gray-100">
-              <View className='flex-row relative'>
-                <View className="p-2 rounded-xl">
-                  <Text className="text-xl font-semibold text-gray-900 mb-1">{plan.name}</Text>
-                  <Text className="text-sm text-gray-700 mb-1">🎯 Lý do: {plan.reason}</Text>
-                  <Text className="text-xs text-gray-500">
-                    {new Date(plan.start_date).toLocaleDateString('vi-VN')} ➝ {new Date(plan.target_quit_date).toLocaleDateString('vi-VN')}
-                  </Text>
-                </View>
-                <TouchableOpacity className='border border-blue-500 h-10 rounded-xl absolute right-0' onPress={() => handleCloneQuitPlan(plan._id)}>
-                  <Text className='text-center my-auto text-blue-500 p-2'>Sử dụng</Text>
+          plans.map(plan => {
+            const isPlanExpanded = !!expandedPlans[plan._id];
+            return (
+              <View key={plan._id} className="mb-6 p-4 bg-white rounded-xl shadow-md border border-gray-100">
+                <TouchableOpacity onPress={() => setExpandedPlans(prev => ({ ...prev, [plan._id]: !prev[plan._id] }))} activeOpacity={0.9}>
+                  <View className='flex-row justify-between items-center'>
+                    <View className="flex-1">
+                      <Text className="text-xl font-bold text-gray-900 mb-1">{plan.name}</Text>
+                      <Text className="text-sm text-gray-700 mb-2">🎯 Lý do: {plan.reason}</Text>
+                      <Text className="text-xs text-gray-500">
+                        {new Date(plan.start_date).toLocaleDateString('vi-VN')} ➝ {new Date(plan.target_quit_date).toLocaleDateString('vi-VN')}
+                      </Text>                    
+                    </View>
+                    
+
+                    <View className="flex-row items-center">
+                      <TouchableOpacity className='border border-blue-500 h-10 rounded-xl mr-4' onPress={() => handleCloneQuitPlan(plan._id)}>
+                        <Text className='text-center my-auto text-blue-500 p-2'>Sử dụng</Text>
+                      </TouchableOpacity>
+                      {isPlanExpanded ? <ChevronUp size={24} color="#374151" /> : <ChevronDown size={24} color="#374151" />}
+                    </View>                   
+                  </View>
+                  <Image source={{ uri: plan.image }} className='h-52 w-full mb-2 rounded-xl mt-3' />
                 </TouchableOpacity>
+
+                {isPlanExpanded && (
+                  <View className="mt-4">
+                    {stages
+                      .filter(stage => stage.plan_id === plan._id)
+                      .map(stage => (
+                        <StageItem
+                          key={stage._id}
+                          stage={stage}
+                          tasks={tasks.filter(t => t.stage_id === stage._id)}
+                          expanded={!!expandedStages[stage._id]}
+                          onToggle={() => setExpandedStages(prev => ({ ...prev, [stage._id]: !prev[stage._id] }))}
+                        />
+                      ))}
+                  </View>
+                )}
               </View>
-
-              <Image source={{ uri: plan.image }} className='h-52 w-full mb-2 rounded-xl'/>
-
-              {stages
-                .filter(stage => stage.plan_id === plan._id)
-                .map(stage => (
-                  <StageItem
-                    key={stage._id}
-                    stage={stage}
-                    tasks={tasks.filter(t => t.stage_id === stage._id)}
-                    expanded={!!expandedStages[stage._id]}
-                    onToggle={() => setExpandedStages(prev => ({ ...prev, [stage._id]: !prev[stage._id] }))}
-                  />
-                ))}
-            </View>
-          ))
+            )
+          })
         )}
       </ScrollView>
       <TouchableOpacity

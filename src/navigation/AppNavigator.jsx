@@ -17,6 +17,7 @@ import MyMeetingsScreen from '../screens/meeting/MyMeetingsScreen';
 import ProgressHistoryScreen from '../screens/progress/ProgressHistoryScreen';
 import FeedbackCoachScreen from '../screens/feedback/FeedbackCoachScreen';
 import RelapseLoggingScreen from '../screens/relapse/RelapseLoggingScreen';
+import FinancialGoalScreen from '../screens/FinancialGoalScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -74,13 +75,9 @@ export default function AppNavigator() {
               <Stack.Screen name="FeedbackCoach" component={FeedbackCoachScreen} />
               <Stack.Screen
                 name="RelapseLogging"
-                component={RelapseLoggingScreen}
-              // options={{
-              //   presentation: 'modal',
-              //   animation: 'slide_from_bottom',
-              //   headerShown: false
-              // }}
+                component={RelapseLoggingScreen}             
               />
+              <Stack.Screen name="FinancialGoal" component={FinancialGoalScreen} />
             </>
           )}
         </Stack.Navigator>
